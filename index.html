@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Scissor Lift</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    h2 { color: #005f9e; }
+    form { border: 1px solid #ccc; padding: 15px; margin-bottom: 30px; border-radius: 8px; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea { width: 100%; padding: 6px; margin-top: 5px; }
+    button { margin-top: 10px; padding: 8px 16px; background: #005f9e; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0074c2; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    th { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h2>Form Reservasi Scissor Lift</h2>
+  <form id="reservasiForm">
+    <label>Nama Peminjam</label>
+    <input type="text" id="namaReservasi" required>
+
+    <label>Departemen</label>
+    <input type="text" id="departemenReservasi">
+
+    <label>Nomor Unit</label>
+    <input type="text" id="unitReservasi" required>
+
+    <label>Tanggal & Jam Mulai</label>
+    <input type="datetime-local" id="mulaiReservasi" required>
+
+    <label>Tanggal & Jam Selesai</label>
+    <input type="datetime-local" id="selesaiReservasi" required>
+
+    <label>Lokasi Kerja</label>
+    <input type="text" id="lokasiReservasi">
+
+    <label>Tujuan Pemakaian</label>
+    <textarea id="tujuanReservasi"></textarea>
+
+    <button type="submit">Simpan Reservasi</button>
+  </form>
+
+  <h2>Form Pemakaian Scissor Lift</h2>
+  <form id="pemakaianForm">
+    <label>Nama Operator</label>
+    <input type="text" id="namaOperator" required>
+
+    <label>Nomor Unit</label>
+    <input type="text" id="unitPemakaian" required>
+
+    <label>Tanggal & Jam Mulai</label>
+    <input type="datetime-local" id="mulaiPemakaian" required>
+
+    <label>Tanggal & Jam Selesai</label>
+    <input type="datetime-local" id="selesaiPemakaian" required>
+
+    <label>Lokasi Kerja</label>
+    <input type="text" id="lokasiPemakaian">
+
+    <label>Kondisi Sebelum</label>
+    <textarea id="kondisiSebelum"></textarea>
+
+    <label>Kondisi Sesudah</label>
+    <textarea id="kondisiSesudah"></textarea>
+
+    <button type="submit">Simpan Pemakaian</button>
+  </form>
+
+  <h2>Data Tersimpan</h2>
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Tipe Form</th><th>Nama</th><th>Unit</th><th>Mulai</th><th>Selesai</th><th>Lokasi</th><th>Keterangan</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const tableBody = document.querySelector("#dataTable tbody");
+
+    function addRow(type, nama, unit, mulai, selesai, lokasi, ket) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${type}</td><td>${nama}</td><td>${unit}</td><td>${mulai}</td><td>${selesai}</td><td>${lokasi}</td><td>${ket}</td>`;
+      tableBody.appendChild(row);
+    }
+
+    document.getElementById("reservasiForm").addEventListener("submit", e => {
+      e.preventDefault();
+      addRow(
+        "Reservasi",
+        document.getElementById("namaReservasi").value,
+        document.getElementById("unitReservasi").value,
+        document.getElementById("mulaiReservasi").value,
+        document.getElementById("selesaiReservasi").value,
+        document.getElementById("lokasiReservasi").value,
+        document.getElementById("tujuanReservasi").value
+      );
+      e.target.reset();
+    });
+
+    document.getElementById("pemakaianForm").addEventListener("submit", e => {
+      e.preventDefault();
+      addRow(
+        "Pemakaian",
+        document.getElementById("namaOperator").value,
+        document.getElementById("unitPemakaian").value,
+        document.getElementById("mulaiPemakaian").value,
+        document.getElementById("selesaiPemakaian").value,
+        document.getElementById("lokasiPemakaian").value,
+        `Sebelum: ${document.getElementById("kondisiSebelum").value}; Sesudah: ${document.getElementById("kondisiSesudah").value}`
+      );
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
