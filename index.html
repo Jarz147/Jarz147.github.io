@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Sparepart Pro - Monitoring & Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20 font-sans">
 
@@ -29,38 +30,35 @@
             <form id="order-form" class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Nama Barang</label>
-                    <input type="text" id="nama_barang" required placeholder="Contoh: PLC" 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    <input type="text" id="nama_barang" required placeholder="Contoh: PLC" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Spesifikasi</label>
-                    <input type="text" id="spesifikasi" placeholder="FX3G-40MR" 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    <input type="text" id="spesifikasi" placeholder="FX3G-40MR" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Quantity Order</label>
-                    <input type="number" id="qty" required placeholder="0" 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Quantity</label>
+                    <input type="number" id="qty" required placeholder="0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Nama Mesin</label>
-                    <input type="text" id="nama_mesin" required placeholder="End Forming" 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    <input type="text" id="nama_mesin" required placeholder="End Forming" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Nama Line</label>
-                    <input type="text" id="nama_line" required placeholder="Assy 1" 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    <input type="text" id="nama_line" required placeholder="Assy 1" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">PIC Order</label>
-                    <input type="text" id="pic_order" required placeholder="Nama Anda" 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    <input type="text" id="pic_order" required placeholder="Nama Anda" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Foto Barang (Optional)</label>
+                    <input type="file" id="foto_barang" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                 </div>
                 
                 <div class="md:col-span-3 flex justify-end mt-2">
-                    <button type="submit" id="btn-submit" 
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-10 rounded-xl transition-all shadow-lg shadow-indigo-200 active:scale-95 uppercase tracking-widest text-xs">
+                    <button type="submit" id="btn-submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-10 rounded-xl transition-all shadow-lg shadow-indigo-200 active:scale-95 uppercase tracking-widest text-xs">
                         Kirim Permintaan
                     </button>
                 </div>
@@ -69,61 +67,63 @@
 
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h2 class="text-lg font-bold text-slate-700 uppercase tracking-widest">Daftar Inventory</h2>
-            <div class="relative w-full md:w-80">
-                <input type="text" id="search-input" placeholder="Cari Barang, Mesin, atau No PR..." 
-                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3.5 top-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div class="flex gap-2 w-full md:w-auto">
+                <button id="btn-export" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    EXPORT EXCEL
+                </button>
+                <div class="relative flex-1 md:w-80">
+                    <input type="text" id="search-input" placeholder="Cari Barang..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3.5 top-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
             </div>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse" id="main-table">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-100 font-bold text-[10px] text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-6 py-4">Foto</th>
                             <th class="px-6 py-4">Tgl & PIC</th>
                             <th class="px-6 py-4">Informasi Barang</th>
-                            <th class="px-6 py-4">Line / Mesin</th>
                             <th class="px-6 py-4 text-center">Qty</th>
                             <th class="px-6 py-4">No PR / PO</th>
                             <th class="px-6 py-4 text-center">Status</th>
                             <th class="px-6 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm">
-                        </tbody>
+                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div id="modal-admin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
-            <h3 class="text-xl font-black text-slate-800 mb-2">Update Gudang</h3>
-            <p class="text-slate-400 text-xs mb-8 uppercase tracking-widest">Lengkapi Data PR & PO Barang</p>
-            <input type="hidden" id="edit-id">
-            <div class="space-y-5">
+    <div id="modal-admin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-black text-slate-800 mb-2 text-center">Update Gudang</h3>
+            <div class="space-y-4 mt-6">
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Nomor PR</label>
-                    <input type="text" id="edit-pr" placeholder="Input No PR" class="w-full px-4 py-3 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                    <input type="text" id="edit-pr" class="w-full px-4 py-3 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Nomor PO</label>
-                    <input type="text" id="edit-po" placeholder="Input No PO" class="w-full px-4 py-3 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                    <input type="text" id="edit-po" class="w-full px-4 py-3 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Status Progress</label>
-                    <select id="edit-status" class="w-full px-4 py-3 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer">
-                        <option value="Open">Masuk List Admin Gudang (Menunggu)</option>
-                        <option value="Close">Selesai (Diterima)</option>
+                    <select id="edit-status" class="w-full px-4 py-3 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                        <option value="Pending">Pending (User Baru Input)</option>
+                        <option value="On Process">On Process (Admin Gudang)</option>
+                        <option value="Selesai">Selesai (Barang Datang)</option>
                     </select>
                 </div>
+                <input type="hidden" id="edit-id">
             </div>
-            <div class="flex gap-4 mt-10">
-                <button onclick="window.closeModal()" class="flex-1 py-4 bg-slate-100 font-bold rounded-2xl text-slate-500 text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Batal</button>
-                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-bold rounded-2xl text-white text-xs uppercase tracking-widest shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Update</button>
+            <div class="flex gap-4 mt-8">
+                <button onclick="window.closeModal()" class="flex-1 py-4 bg-slate-100 font-bold rounded-2xl text-slate-500 text-xs uppercase tracking-widest">Batal</button>
+                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-bold rounded-2xl text-white text-xs uppercase tracking-widest shadow-lg shadow-indigo-100 hover:bg-indigo-700">Simpan</button>
             </div>
         </div>
     </div>
@@ -135,14 +135,14 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5bmh2dmFvbHJqeGRjYnlvemxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Njg4NzEsImV4cCI6MjA4NTU0NDg3MX0.GSEfz8HVd49uEWXd70taR6FUv243VrFJKn6KlsZW-aQ'
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-        let localData = []; // Simpan data di sini untuk pencarian
+        let localData = [];
 
-        // 1. FUNGSI TAMPILKAN DATA DENGAN SORTING DATE (DESC)
+        // 1. FETCH DATA
         async function fetchOrders() {
             const { data, error } = await supabase
                 .from('Order-sparepart')
                 .select('*')
-                .order('created_at', { ascending: false }); // Otomatis sorting terbaru di atas
+                .order('created_at', { ascending: false });
             
             if (error) return;
             localData = data;
@@ -155,16 +155,20 @@
             body.innerHTML = dataToRender.map(item => `
                 <tr class="hover:bg-slate-50 transition-all group">
                     <td class="px-6 py-5">
+                        ${item.foto_url ? 
+                            `<a href="${item.foto_url}" target="_blank">
+                                <img src="${item.foto_url}" class="w-12 h-12 object-cover rounded-lg border border-slate-200 hover:scale-110 transition-transform">
+                             </a>` : 
+                            `<div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[8px] text-slate-400">No Img</div>`
+                        }
+                    </td>
+                    <td class="px-6 py-5">
                         <div class="text-[10px] font-bold text-slate-800">${new Date(item.created_at).toLocaleDateString('id-ID')}</div>
                         <div class="text-[9px] text-slate-400 font-black uppercase tracking-tighter">${item['PIC Order'] || '-'}</div>
                     </td>
                     <td class="px-6 py-5">
                         <div class="font-bold text-slate-800 text-sm group-hover:text-indigo-600 transition-colors">${item['Nama Barang'] || '-'}</div>
-                        <div class="text-[10px] text-slate-400 italic">${item.Spesifikasi || '-'}</div>
-                    </td>
-                    <td class="px-6 py-5">
-                        <div class="text-xs font-bold text-slate-700 uppercase tracking-tight">${item['Nama Line'] || '-'}</div>
-                        <div class="text-[10px] text-slate-400 font-mono italic">${item['Nama Mesin'] || '-'}</div>
+                        <div class="text-[10px] text-slate-400 italic">${item.Spesifikasi || '-'} / ${item['Nama Mesin'] || '-'}</div>
                     </td>
                     <td class="px-6 py-5 text-center">
                         <span class="bg-indigo-50 text-indigo-600 font-black px-3 py-1 rounded-lg text-xs">${item['Quantity Order'] || 0}</span>
@@ -184,32 +188,49 @@
                     <td class="px-6 py-5 text-center">
                         <button onclick="window.openModal('${item.id}', '${item.PR || ''}', '${item.PO || ''}', '${item.Status || 'Pending'}')" 
                             class="bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-600 p-2 rounded-xl transition-all shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // 3. FITUR SEARCH REAL-TIME
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            const filtered = localData.filter(item => 
-                (item['Nama Barang']?.toLowerCase().includes(val)) || 
-                (item['Nama Mesin']?.toLowerCase().includes(val)) || 
-                (item.PR?.toLowerCase().includes(val)) ||
-                (item['PIC Order']?.toLowerCase().includes(val))
-            );
-            renderTable(filtered);
-        });
+        // 3. FUNGSI UPLOAD FOTO
+        async function uploadImage(file) {
+            if (!file) return null;
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
 
-        // 4. INPUT USER
+            const { data, error } = await supabase.storage
+                .from('sparepart-images')
+                .upload(filePath, file);
+
+            if (error) {
+                console.error('Error upload:', error);
+                return null;
+            }
+
+            const { data: publicUrl } = supabase.storage
+                .from('sparepart-images')
+                .getPublicUrl(filePath);
+
+            return publicUrl.publicUrl;
+        }
+
+        // 4. SUBMIT FORM + UPLOAD
         document.getElementById('order-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
+            btn.innerHTML = "Sedang Mengirim...";
             btn.disabled = true;
+
+            const fotoFile = document.getElementById('foto_barang').files[0];
+            let imageUrl = null;
+
+            if (fotoFile) {
+                imageUrl = await uploadImage(fotoFile);
+            }
 
             const payload = {
                 'Nama Barang': document.getElementById('nama_barang').value,
@@ -218,7 +239,8 @@
                 'Nama Mesin': document.getElementById('nama_mesin').value,
                 'Nama Line': document.getElementById('nama_line').value,
                 'PIC Order': document.getElementById('pic_order').value,
-                'Status': 'Pending'
+                'Status': 'Pending',
+                'foto_url': imageUrl
             };
 
             const { error } = await supabase.from('Order-sparepart').insert([payload]);
@@ -226,11 +248,47 @@
             else {
                 document.getElementById('order-form').reset();
                 fetchOrders();
+                alert("Data berhasil dikirim!");
             }
+            btn.innerHTML = "Kirim Permintaan";
             btn.disabled = false;
         });
 
-        // 5. UPDATE ADMIN (WINDOW SCOPE)
+        // 5. EXPORT EXCEL
+        document.getElementById('btn-export').addEventListener('click', () => {
+            if (localData.length === 0) return alert("Tidak ada data untuk dieksport");
+            
+            // Format data untuk excel agar lebih rapi
+            const excelData = localData.map(item => ({
+                Tanggal: new Date(item.created_at).toLocaleDateString('id-ID'),
+                PIC: item['PIC Order'],
+                Barang: item['Nama Barang'],
+                Spesifikasi: item.Spesifikasi,
+                Mesin: item['Nama Mesin'],
+                Line: item['Nama Line'],
+                Qty: item['Quantity Order'],
+                PR: item.PR,
+                PO: item.PO,
+                Status: item.Status
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "SparepartOrders");
+            XLSX.writeFile(workbook, `Report_Sparepart_${new Date().getTime()}.xlsx`);
+        });
+
+        // 6. SEARCH & MODAL LOGIC (Global Scope)
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = localData.filter(item => 
+                (item['Nama Barang']?.toLowerCase().includes(val)) || 
+                (item['Nama Mesin']?.toLowerCase().includes(val)) || 
+                (item.PR?.toLowerCase().includes(val))
+            );
+            renderTable(filtered);
+        });
+
         window.openModal = (id, pr, po, status) => {
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-pr').value = pr;
