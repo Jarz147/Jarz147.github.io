@@ -1,170 +1,36 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Form Scissor Lift</title>
-  <style>
-    body { font-family: "Segoe UI", Arial; margin: 20px; background: #f5f7fa; }
-    h2 { color: #0d6efd; margin-top: 40px; }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom: 30px;
-      border-left: 5px solid #0d6efd;
-    }
-
-    label { display: block; margin-top: 12px; font-weight: 600; }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 10px 18px;
-      background: #0d6efd;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-    button:hover { background: #0b5ed7; }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-    }
-
-    th {
-      background: #e9ecef;
-      padding: 10px;
-      text-align: left;
-      font-weight: 700;
-    }
-
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    tr:nth-child(even) { background: #fafafa; }
-
-  </style>
+    <title>Cek Koneksi Supabase</title>
 </head>
 <body>
-  <h2>Form Reservasi Scissor Lift</h2>
-  <form id="reservasiForm" class="card">
-    <label>Nama Peminjam</label>
-    <input type="text" id="namaReservasi" required>
+    <h1>Data dari Supabase:</h1>
+    <ul id="data-list">Sedang memuat...</ul>
 
-    <label>Departemen</label>
-    <input type="text" id="departemenReservasi">
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    <label>Nomor Unit</label>
-    <input type="text" id="unitReservasi" required>
+        // Ganti dengan kredensial dari Settings > API di dashboard Supabase kamu
+        const SUPABASE_URL = 'https://xyzyourproject.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 
-    <label>Tanggal & Jam Mulai</label>
-    <input type="datetime-local" id="mulaiReservasi" required>
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    <label>Tanggal & Jam Selesai</label>
-    <input type="datetime-local" id="selesaiReservasi" required>
+        async function ambilData() {
+            const { data, error } = await supabase
+                .from('nama_tabel_kamu') // Ganti dengan nama tabelmu
+                .select('*')
 
-    <label>Lokasi Kerja</label>
-    <input type="text" id="lokasiReservasi">
+            const listElement = document.getElementById('data-list');
+            
+            if (error) {
+                listElement.innerHTML = "Gagal memuat: " + error.message;
+            } else {
+                listElement.innerHTML = data.map(item => `<li>${item.nama_kolom}</li>`).join('');
+            }
+        }
 
-    <label>Tujuan Pemakaian</label>
-    <textarea id="tujuanReservasi"></textarea>
-
-    <button type="submit">Simpan Reservasi</button>
-  </form>
-
-  <h2>Form Pemakaian Scissor Lift</h2>
-  <form id="pemakaianForm" class="card">
-    <label>Nama Operator</label>
-    <input type="text" id="namaOperator" required>
-
-    <label>Nomor Unit</label>
-    <input type="text" id="unitPemakaian" required>
-
-    <label>Tanggal & Jam Mulai</label>
-    <input type="datetime-local" id="mulaiPemakaian" required>
-
-    <label>Tanggal & Jam Selesai</label>
-    <input type="datetime-local" id="selesaiPemakaian" required>
-
-    <label>Lokasi Kerja</label>
-    <input type="text" id="lokasiPemakaian">
-
-    <label>Kondisi Sebelum</label>
-    <textarea id="kondisiSebelum"></textarea>
-
-    <label>Kondisi Sesudah</label>
-    <textarea id="kondisiSesudah"></textarea>
-
-    <button type="submit">Simpan Pemakaian</button>
-  </form>
-
-  <h2>Data Tersimpan</h2>
-  <table id="dataTable">
-    <thead>
-      <tr>
-        <th>Tipe Form</th><th>Nama</th><th>Unit</th><th>Mulai</th><th>Selesai</th><th>Lokasi</th><th>Keterangan</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <script>
-    const tableBody = document.querySelector("#dataTable tbody");
-
-    function addRow(type, nama, unit, mulai, selesai, lokasi, ket) {
-      const row = document.createElement("tr");
-      row.innerHTML = `<td>${type}</td><td>${nama}</td><td>${unit}</td><td>${mulai}</td><td>${selesai}</td><td>${lokasi}</td><td>${ket}</td>`;
-      tableBody.appendChild(row);
-    }
-
-    document.getElementById("reservasiForm").addEventListener("submit", e => {
-      e.preventDefault();
-      addRow(
-        "Reservasi",
-        document.getElementById("namaReservasi").value,
-        document.getElementById("unitReservasi").value,
-        document.getElementById("mulaiReservasi").value,
-        document.getElementById("selesaiReservasi").value,
-        document.getElementById("lokasiReservasi").value,
-        document.getElementById("tujuanReservasi").value
-      );
-      e.target.reset();
-    });
-
-    document.getElementById("pemakaianForm").addEventListener("submit", e => {
-      e.preventDefault();
-      addRow(
-        "Pemakaian",
-        document.getElementById("namaOperator").value,
-        document.getElementById("unitPemakaian").value,
-        document.getElementById("mulaiPemakaian").value,
-        document.getElementById("selesaiPemakaian").value,
-        document.getElementById("lokasiPemakaian").value,
-        `Sebelum: ${document.getElementById("kondisiSebelum").value}; Sesudah: ${document.getElementById("kondisiSesudah").value}`
-      );
-      e.target.reset();
-    });
-  </script>
+        ambilData();
+    </script>
 </body>
 </html>
