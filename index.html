@@ -3,53 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cek Koneksi Supabase</title>
+    <title>Sparepart Inventory | Supabase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Data dari Supabase:</h1>
-    <ul id="data-list">Sedang memuat...</ul>
+<body class="bg-gray-50 min-h-screen">
+
+    <div class="max-w-5xl mx-auto px-4 py-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Order Sparepart</h1>
+                <p class="text-gray-500 mt-1">Data Inventory Real-time dari Supabase</p>
+            </div>
+            <button onclick="location.reload()" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition-all font-medium flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh Data
+            </button>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">ID</th>
+                            <th class="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">Nama Sparepart</th>
+                            <th class="px-6 py-4 text-sm font-semibold text-gray-600 uppercase text-center">Jumlah</th>
+                            <th class="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">Status</th>
+                            <th class="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">Tanggal Input</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-body" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-gray-400 italic">
+                                Sedang memuat data dari database...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <p id="error-msg" class="mt-4 text-red-500 text-sm hidden"></p>
+    </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        // 1. Pastikan URL tidak diakhiri dengan tanda miring (/)
         const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co'
-        
-        // 2. Gunakan ANON_KEY (yang sangat panjang) dari Settings > API
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5bmh2dmFvbHJqeGRjYnlvemxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Njg4NzEsImV4cCI6MjA4NTU0NDg3MX0.GSEfz8HVd49uEWXd70taR6FUv243VrFJKn6KlsZW-aQ'
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-        async function ambilData() {
+        async function fetchSparepart() {
             try {
-                // 3. Nama tabel HARUS Sesuai Gambar 2: 'Order-sparepart'
                 const { data, error } = await supabase
-                    .from('Order-sparepart') 
+                    .from('Order-sparepart')
                     .select('*')
 
-                const listElement = document.getElementById('data-list');
-                
+                const body = document.getElementById('data-body');
+                const errorMsg = document.getElementById('error-msg');
+
                 if (error) {
-                    // Jika error datang dari Supabase (seperti RLS atau Typo tabel)
-                    listElement.innerHTML = "Gagal memuat: " + error.message;
-                    console.error("Error Supabase:", error);
-                } else {
-                    // 4. Pastikan 'nama_kolom' diganti dengan nama kolom asli di tabelmu (misal: 'nama_barang')
-                    if (data.length === 0) {
-                        listElement.innerHTML = "Koneksi berhasil, tapi tabel kosong.";
-                    } else {
-                        // Menampilkan seluruh data dalam format JSON agar kamu bisa cek nama kolomnya
-                        listElement.innerHTML = data.map(item => `<li>${JSON.stringify(item)}</li>`).join('');
-                    }
+                    body.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-red-400">Gagal memuat: ${error.message}</td></tr>`;
+                    return;
                 }
+
+                if (data.length === 0) {
+                    body.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-gray-400">Tidak ada data ditemukan di tabel Order-sparepart.</td></tr>`;
+                    return;
+                }
+
+                // Render data ke tabel
+                body.innerHTML = data.map(item => `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 text-sm text-gray-600 font-mono">${item.id}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${item.nama_barang || 'Tanpa Nama'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700 text-center">${item.jumlah || 0}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${item.jumlah > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${item.jumlah > 0 ? 'Tersedia' : 'Habis'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            ${new Date(item.created_at).toLocaleDateString('id-ID')}
+                        </td>
+                    </tr>
+                `).join('');
+
             } catch (err) {
-                // Jika masuk ke sini, biasanya karena diblokir browser (AdBlock) atau salah URL
-                console.error("Kesalahan Fatal:", err);
-                document.getElementById('data-list').innerHTML = "Gagal memuat: Terjadi kesalahan koneksi (Cek Console F12)";
+                document.getElementById('data-body').innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-red-500 font-bold">Terjadi kesalahan fatal. Cek koneksi internet atau AdBlocker.</td></tr>`;
             }
         }
 
-        ambilData();
+        fetchSparepart();
     </script>
 </body>
 </html>
