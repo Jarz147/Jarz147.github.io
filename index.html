@@ -124,8 +124,8 @@
                         <div class="text-xs text-slate-400 italic">${item['Nama Mesin'] || item.nama_mesin || 'Umum'}</div>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="text-xs px-2 py-1 rounded-md font-bold ${item['Skala Priorit.'] === 'Urgent' ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600'}">
-                            ${item['Skala Priorit.'] || item.skala_prioritas || 'Normal'}
+                        <span class="text-xs px-2 py-1 rounded-md font-bold ${item['Skala Prioritas'] === 'Urgent' ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600'}">
+                            ${item['Skala Prioritas'] || item.skala_prioritas || 'Normal'}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-slate-600">${item['PIC Order'] || item.pic_order || '-'}</td>
@@ -157,7 +157,7 @@
                 'Nama Mesin': document.getElementById('nama_mesin').value,
                 'PIC Order': document.getElementById('pic_order').value,
                 'Spesifikasi': document.getElementById('spesifikasi').value,
-                'Skala Priorit.': document.getElementById('skala_prioritas').value,
+                'Skala Prioritas': document.getElementById('skala_prioritas').value,
                 'Status': document.getElementById('status').value,
                 'Keterangan': document.getElementById('keterangan').value
             };
