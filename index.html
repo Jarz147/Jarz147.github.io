@@ -36,9 +36,19 @@
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Spesifikasi</label>
                     <input type="text" id="spesifikasi" placeholder="FX3G-40MR" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
                 </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Quantity</label>
-                    <input type="number" id="qty" required placeholder="0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Qty</label>
+                        <input type="number" id="qty" required placeholder="0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Satuan</label>
+                        <select id="satuan" required class="w-full px-2 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all cursor-pointer">
+                            <option value="Pcs">Pcs</option>
+                            <option value="Roll">Roll</option>
+                            <option value="M">M (Meter)</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Nama Mesin</label>
@@ -87,7 +97,7 @@
                             <th class="px-6 py-4">Foto</th>
                             <th class="px-6 py-4">Tgl & PIC</th>
                             <th class="px-6 py-4">Informasi Barang</th>
-                            <th class="px-6 py-4 text-center">Qty</th>
+                            <th class="px-6 py-4 text-center">Qty / Satuan</th>
                             <th class="px-6 py-4">No PR / PO</th>
                             <th class="px-6 py-4 text-center">Status</th>
                             <th class="px-6 py-4 text-center">Aksi</th>
@@ -137,7 +147,6 @@
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
         let localData = [];
 
-        // 1. FETCH DATA
         async function fetchOrders() {
             const { data, error } = await supabase
                 .from('Order-sparepart')
@@ -149,7 +158,6 @@
             renderTable(data);
         }
 
-        // 2. RENDER TABEL
         function renderTable(dataToRender) {
             const body = document.getElementById('data-body');
             body.innerHTML = dataToRender.map(item => `
@@ -171,7 +179,10 @@
                         <div class="text-[10px] text-slate-400 italic">${item.Spesifikasi || '-'} / ${item['Nama Mesin'] || '-'}</div>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        <span class="bg-indigo-50 text-indigo-600 font-black px-3 py-1 rounded-lg text-xs">${item['Quantity Order'] || 0}</span>
+                        <div class="flex flex-col items-center">
+                            <span class="bg-indigo-50 text-indigo-600 font-black px-3 py-1 rounded-lg text-xs">${item['Quantity Order'] || 0}</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase mt-1">${item.Satuan || 'Pcs'}</span>
+                        </div>
                     </td>
                     <td class="px-6 py-5">
                         <div class="text-[10px] font-bold text-slate-600 uppercase tracking-tighter">PR: ${item.PR || '-'}</div>
@@ -195,30 +206,17 @@
             `).join('');
         }
 
-        // 3. FUNGSI UPLOAD FOTO
         async function uploadImage(file) {
             if (!file) return null;
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `${fileName}`;
-
-            const { data, error } = await supabase.storage
-                .from('sparepart-images')
-                .upload(filePath, file);
-
-            if (error) {
-                console.error('Error upload:', error);
-                return null;
-            }
-
-            const { data: publicUrl } = supabase.storage
-                .from('sparepart-images')
-                .getPublicUrl(filePath);
-
+            const { error } = await supabase.storage.from('sparepart-images').upload(filePath, file);
+            if (error) return null;
+            const { data: publicUrl } = supabase.storage.from('sparepart-images').getPublicUrl(filePath);
             return publicUrl.publicUrl;
         }
 
-        // 4. SUBMIT FORM + UPLOAD
         document.getElementById('order-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
@@ -227,15 +225,13 @@
 
             const fotoFile = document.getElementById('foto_barang').files[0];
             let imageUrl = null;
-
-            if (fotoFile) {
-                imageUrl = await uploadImage(fotoFile);
-            }
+            if (fotoFile) imageUrl = await uploadImage(fotoFile);
 
             const payload = {
                 'Nama Barang': document.getElementById('nama_barang').value,
                 'Spesifikasi': document.getElementById('spesifikasi').value,
                 'Quantity Order': parseInt(document.getElementById('qty').value),
+                'Satuan': document.getElementById('satuan').value,
                 'Nama Mesin': document.getElementById('nama_mesin').value,
                 'Nama Line': document.getElementById('nama_line').value,
                 'PIC Order': document.getElementById('pic_order').value,
@@ -254,31 +250,27 @@
             btn.disabled = false;
         });
 
-        // 5. EXPORT EXCEL
         document.getElementById('btn-export').addEventListener('click', () => {
-            if (localData.length === 0) return alert("Tidak ada data untuk dieksport");
-            
-            // Format data untuk excel agar lebih rapi
+            if (localData.length === 0) return alert("Tidak ada data");
             const excelData = localData.map(item => ({
                 Tanggal: new Date(item.created_at).toLocaleDateString('id-ID'),
                 PIC: item['PIC Order'],
                 Barang: item['Nama Barang'],
                 Spesifikasi: item.Spesifikasi,
+                Qty: item['Quantity Order'],
+                Satuan: item.Satuan || 'Pcs',
                 Mesin: item['Nama Mesin'],
                 Line: item['Nama Line'],
-                Qty: item['Quantity Order'],
                 PR: item.PR,
                 PO: item.PO,
                 Status: item.Status
             }));
-
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "SparepartOrders");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sparepart");
             XLSX.writeFile(workbook, `Report_Sparepart_${new Date().getTime()}.xlsx`);
         });
 
-        // 6. SEARCH & MODAL LOGIC (Global Scope)
         document.getElementById('search-input').addEventListener('input', (e) => {
             const val = e.target.value.toLowerCase();
             const filtered = localData.filter(item => 
@@ -296,15 +288,12 @@
             document.getElementById('edit-status').value = status;
             document.getElementById('modal-admin').classList.remove('hidden');
         };
-
         window.closeModal = () => document.getElementById('modal-admin').classList.add('hidden');
-
         window.saveAdminUpdate = async () => {
             const id = document.getElementById('edit-id').value;
             const pr = document.getElementById('edit-pr').value;
             const po = document.getElementById('edit-po').value;
             const status = document.getElementById('edit-status').value;
-
             const { error } = await supabase.from('Order-sparepart').update({ 'PR': pr, 'PO': po, 'Status': status }).eq('id', id);
             if (error) alert(error.message);
             else { window.closeModal(); fetchOrders(); }
