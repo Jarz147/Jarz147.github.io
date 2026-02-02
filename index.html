@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cek Koneksi Supabase</title>
 </head>
 <body>
@@ -10,23 +12,40 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        // Ganti dengan kredensial dari Settings > API di dashboard Supabase kamu
-        const SUPABASE_URL = 'https://xyzyourproject.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        // 1. Pastikan URL tidak diakhiri dengan tanda miring (/)
+        const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co'
+        
+        // 2. Gunakan ANON_KEY (yang sangat panjang) dari Settings > API
+        const SUPABASE_ANON_KEY = 'MASUKKAN_ANON_KEY_KAMU_DI_SINI'
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
         async function ambilData() {
-            const { data, error } = await supabase
-                .from('nama_tabel_kamu') // Ganti dengan nama tabelmu
-                .select('*')
+            try {
+                // 3. Nama tabel HARUS Sesuai Gambar 2: 'Order-sparepart'
+                const { data, error } = await supabase
+                    .from('Order-sparepart') 
+                    .select('*')
 
-            const listElement = document.getElementById('data-list');
-            
-            if (error) {
-                listElement.innerHTML = "Gagal memuat: " + error.message;
-            } else {
-                listElement.innerHTML = data.map(item => `<li>${item.nama_kolom}</li>`).join('');
+                const listElement = document.getElementById('data-list');
+                
+                if (error) {
+                    // Jika error datang dari Supabase (seperti RLS atau Typo tabel)
+                    listElement.innerHTML = "Gagal memuat: " + error.message;
+                    console.error("Error Supabase:", error);
+                } else {
+                    // 4. Pastikan 'nama_kolom' diganti dengan nama kolom asli di tabelmu (misal: 'nama_barang')
+                    if (data.length === 0) {
+                        listElement.innerHTML = "Koneksi berhasil, tapi tabel kosong.";
+                    } else {
+                        // Menampilkan seluruh data dalam format JSON agar kamu bisa cek nama kolomnya
+                        listElement.innerHTML = data.map(item => `<li>${JSON.stringify(item)}</li>`).join('');
+                    }
+                }
+            } catch (err) {
+                // Jika masuk ke sini, biasanya karena diblokir browser (AdBlock) atau salah URL
+                console.error("Kesalahan Fatal:", err);
+                document.getElementById('data-list').innerHTML = "Gagal memuat: Terjadi kesalahan koneksi (Cek Console F12)";
             }
         }
 
