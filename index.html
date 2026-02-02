@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Order Sparepart - Admin & User</title>
+    <title>Sistem Order Sparepart v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 min-h-screen pb-20">
+<body class="bg-slate-50 min-h-screen pb-20 font-sans">
 
     <div class="max-w-6xl mx-auto px-4 py-8">
         <div class="mb-8 flex justify-between items-end border-b pb-6">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-800">Sparepart <span class="text-indigo-600">System</span></h1>
-                <p class="text-slate-500 text-sm">Input Order & Update Data Gudang (PR/PO)</p>
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Sparepart <span class="text-indigo-600">Control</span></h1>
+                <p class="text-slate-500 text-sm mt-1">Sistem Pemantauan PR/PO dan Status Sparepart</p>
             </div>
-            <div class="text-xs font-bold bg-green-100 text-green-600 px-3 py-1 rounded-full border border-green-200">DATABASE CONNECTED</div>
+            <div class="flex flex-col items-end gap-1">
+                <div class="text-[10px] font-bold bg-green-100 text-green-600 px-3 py-1 rounded-full border border-green-200">DATABASE CONNECTED</div>
+                <button onclick="location.reload()" class="text-xs text-slate-400 hover:text-indigo-600 transition-colors">Refresh Halaman</button>
+            </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-10">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-10 transition-all hover:shadow-md">
             <h2 class="text-md font-bold mb-4 text-slate-700 flex items-center gap-2">
-                <span class="bg-indigo-600 w-1.5 h-5 rounded-full"></span> Input Order Baru
+                <span class="bg-indigo-600 w-1.5 h-5 rounded-full"></span> 
+                Buat Permintaan Barang
             </h2>
             <form id="order-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <input type="text" id="nama_barang" placeholder="Nama Barang" required class="px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                <input type="text" id="nama_mesin" placeholder="Nama Mesin" required class="px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                <input type="text" id="pic_order" placeholder="PIC Order" required class="px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                <button type="submit" id="btn-submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition-all">Simpan Order</button>
+                <input type="text" id="nama_barang" placeholder="Nama Barang" required 
+                    class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                <input type="text" id="nama_mesin" placeholder="Nama Mesin" required 
+                    class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                <input type="text" id="pic_order" placeholder="PIC Order" required 
+                    class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                <button type="submit" id="btn-submit" 
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-lg shadow-indigo-100 active:scale-95">
+                    Simpan Order
+                </button>
             </form>
         </div>
 
@@ -34,45 +44,57 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-100">
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Barang / Mesin</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">No PR</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">No PO</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Status</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Aksi</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Barang / Mesin</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">No PR</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">No PO</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Aksi Admin</th>
                         </tr>
                     </thead>
                     <tbody id="data-body" class="divide-y divide-slate-50">
-                        </tbody>
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-slate-400 italic text-sm">Sedang mengambil data...</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div id="modal-admin" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-            <h3 class="text-xl font-bold text-slate-800 mb-4">Update Data Gudang</h3>
+    <div id="modal-admin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 px-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-start mb-6">
+                <h3 class="text-xl font-black text-slate-800">Update Gudang</h3>
+                <button onclick="window.closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            
             <input type="hidden" id="edit-id">
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nomor PR</label>
-                    <input type="text" id="edit-pr" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Nomor PR</label>
+                    <input type="text" id="edit-pr" placeholder="Contoh: PR/2024/001" 
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nomor PO</label>
-                    <input type="text" id="edit-po" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Nomor PO</label>
+                    <input type="text" id="edit-po" placeholder="Contoh: PO/JKT/889" 
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Status Order</label>
-                    <select id="edit-status" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="Pending">Pending</option>
-                        <option value="On Process">On Process</option>
-                        <option value="Selesai">Selesai</option>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Status Progress</label>
+                    <select id="edit-status" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer">
+                        <option value="Pending">Pending (Menunggu)</option>
+                        <option value="On Process">On Process (Diproses)</option>
+                        <option value="Selesai">Selesai (Diterima)</option>
                     </select>
                 </div>
             </div>
-            <div class="flex gap-3 mt-6">
-                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg transition-all text-sm">Batal</button>
-                <button onclick="saveAdminUpdate()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-all text-sm">Simpan Perubahan</button>
+            
+            <div class="flex gap-4 mt-8">
+                <button onclick="window.closeModal()" 
+                    class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all text-sm">Batal</button>
+                <button onclick="window.saveAdminUpdate()" 
+                    class="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all text-sm shadow-lg shadow-indigo-100">Simpan</button>
             </div>
         </div>
     </div>
@@ -80,7 +102,7 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co' //
+        const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co'
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5bmh2dmFvbHJqeGRjYnlvemxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Njg4NzEsImV4cCI6MjA4NTU0NDg3MX0.GSEfz8HVd49uEWXd70taR6FUv243VrFJKn6KlsZW-aQ'
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -88,26 +110,39 @@
         // 1. FUNGSI TAMPILKAN DATA
         async function fetchOrders() {
             const { data, error } = await supabase.from('Order-sparepart').select('*').order('created_at', { ascending: false });
-            if (error) return console.error(error);
+            
+            if (error) {
+                console.error(error);
+                return;
+            }
 
             const body = document.getElementById('data-body');
+            
+            if (data.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-slate-400">Belum ada data transaksi.</td></tr>`;
+                return;
+            }
+
             body.innerHTML = data.map(item => `
-                <tr class="hover:bg-slate-50 transition-all">
-                    <td class="px-6 py-4">
-                        <div class="font-bold text-slate-800">${item['Nama Barang'] || '-'}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${item['Nama Mesin'] || '-'}</div>
+                <tr class="hover:bg-slate-50/80 transition-all border-b border-slate-100/50">
+                    <td class="px-6 py-5">
+                        <div class="font-bold text-slate-800 text-sm">${item['Nama Barang'] || '-'}</div>
+                        <div class="text-[10px] text-indigo-500 font-black uppercase tracking-tighter mt-0.5">${item['Nama Mesin'] || 'MESIN UMUM'}</div>
                     </td>
-                    <td class="px-6 py-4 text-sm text-slate-600 font-medium">${item.PR || '-'}</td>
-                    <td class="px-6 py-4 text-sm text-slate-600 font-medium">${item.PO || '-'}</td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.Status === 'Selesai' ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}">
+                    <td class="px-6 py-5 text-xs text-slate-600 font-mono font-semibold">${item.PR || '<span class="text-slate-300">-</span>'}</td>
+                    <td class="px-6 py-5 text-xs text-slate-600 font-mono font-semibold">${item.PO || '<span class="text-slate-300">-</span>'}</td>
+                    <td class="px-6 py-5 text-center">
+                        <span class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                            item.Status === 'Selesai' ? 'bg-green-100 text-green-700' : 
+                            item.Status === 'On Process' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                        }">
                             ${item.Status || 'Pending'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <button onclick="openModal('${item.id}', '${item.PR || ''}', '${item.PO || ''}', '${item.Status || 'Pending'}')" 
-                            class="text-indigo-600 hover:text-indigo-800 text-xs font-bold underline decoration-2 underline-offset-4">
-                            EDIT GUDANG
+                    <td class="px-6 py-5 text-center">
+                        <button onclick="window.openModal('${item.id}', '${item.PR || ''}', '${item.PO || ''}', '${item.Status || 'Pending'}')" 
+                            class="bg-white border border-slate-200 text-slate-600 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 px-4 py-1.5 rounded-lg text-[10px] font-black transition-all shadow-sm">
+                            UPDATE
                         </button>
                     </td>
                 </tr>
@@ -119,6 +154,7 @@
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
             btn.disabled = true;
+            btn.innerText = 'Menyimpan...';
 
             const payload = {
                 'Nama Barang': document.getElementById('nama_barang').value,
@@ -128,34 +164,19 @@
             };
 
             const { error } = await supabase.from('Order-sparepart').insert([payload]);
-            if (error) alert(error.message);
-            else {
+            
+            if (error) {
+                alert("Gagal menyimpan: " + error.message);
+            } else {
                 document.getElementById('order-form').reset();
-                fetchOrders();
+                await fetchOrders();
             }
+            
             btn.disabled = false;
+            btn.innerText = 'Simpan Order';
         });
 
-        // 3. FUNGSI UPDATE (ADMIN GUDANG)
-        window.saveAdminUpdate = async () => {
-            const id = document.getElementById('edit-id').value;
-            const pr = document.getElementById('edit-pr').value;
-            const po = document.getElementById('edit-po').value;
-            const status = document.getElementById('edit-status').value;
-
-            const { error } = await supabase
-                .from('Order-sparepart')
-                .update({ 'PR': pr, 'PO': po, 'Status': status })
-                .eq('id', id);
-
-            if (error) alert(error.message);
-            else {
-                closeModal();
-                fetchOrders();
-            }
-        };
-
-        // Modal Helpers
+        // 3. EXPOSE FUNGSI KE WINDOW (Agar onclick berfungsi)
         window.openModal = (id, pr, po, status) => {
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-pr').value = pr;
@@ -168,6 +189,26 @@
             document.getElementById('modal-admin').classList.add('hidden');
         };
 
+        window.saveAdminUpdate = async () => {
+            const id = document.getElementById('edit-id').value;
+            const pr = document.getElementById('edit-pr').value;
+            const po = document.getElementById('edit-po').value;
+            const status = document.getElementById('edit-status').value;
+
+            const { error } = await supabase
+                .from('Order-sparepart')
+                .update({ 'PR': pr, 'PO': po, 'Status': status })
+                .eq('id', id);
+
+            if (error) {
+                alert("Update Gagal: " + error.message);
+            } else {
+                window.closeModal();
+                await fetchOrders();
+            }
+        };
+
+        // Load data pertama kali
         fetchOrders();
     </script>
 </body>
