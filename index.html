@@ -3,92 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Order Sparepart</title>
+    <title>Sistem Order Sparepart - Admin & User</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20">
 
     <div class="max-w-6xl mx-auto px-4 py-8">
-        <div class="mb-8 border-b pb-6 flex justify-between items-end">
+        <div class="mb-8 flex justify-between items-end border-b pb-6">
             <div>
-                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Sparepart <span class="text-indigo-600">Control</span></h1>
-                <p class="text-slate-500 mt-2">Pencatatan dan Monitoring Order Sparepart Mesin</p>
+                <h1 class="text-3xl font-extrabold text-slate-800">Sparepart <span class="text-indigo-600">System</span></h1>
+                <p class="text-slate-500 text-sm">Input Order & Update Data Gudang (PR/PO)</p>
             </div>
-            <div id="connection-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600 border border-green-200">
-                DATABASE CONNECTED
-            </div>
+            <div class="text-xs font-bold bg-green-100 text-green-600 px-3 py-1 rounded-full border border-green-200">DATABASE CONNECTED</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-10">
-            <h2 class="text-lg font-bold mb-6 text-slate-700 flex items-center gap-2">
-                <span class="bg-indigo-600 w-2 h-6 rounded-full"></span>
-                Input Data Order Baru
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-10">
+            <h2 class="text-md font-bold mb-4 text-slate-700 flex items-center gap-2">
+                <span class="bg-indigo-600 w-1.5 h-5 rounded-full"></span> Input Order Baru
             </h2>
-            
-            <form id="order-form" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">Nama Barang</label>
-                    <input type="text" id="nama_barang" required placeholder="Nama komponen..." 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">Nama Mesin</label>
-                    <input type="text" id="nama_mesin" required placeholder="Kode/Nama mesin..." 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">PIC Order</label>
-                    <input type="text" id="pic_order" required placeholder="Nama penanggung jawab..." 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">Spesifikasi</label>
-                    <input type="text" id="spesifikasi" placeholder="Ukuran, tipe, dll..." 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">Skala Prioritas</label>
-                    <select id="skala_prioritas" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        <option value="Normal">Normal</option>
-                        <option value="Urgent">Urgent</option>
-                        <option value="Emergency">Emergency</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">Status</label>
-                    <select id="status" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        <option value="Pending">Pending</option>
-                        <option value="On Process">On Process</option>
-                        <option value="Selesai">Selesai</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-slate-600 mb-2">Keterangan Tambahan</label>
-                    <input type="text" id="keterangan" placeholder="Catatan opsional..." 
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                </div>
-                
-                <div class="flex items-end">
-                    <button type="submit" id="btn-submit" 
-                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-indigo-200 flex justify-center items-center gap-2">
-                        <span id="btn-text">Simpan Order</span>
-                    </button>
-                </div>
+            <form id="order-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="nama_barang" placeholder="Nama Barang" required class="px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                <input type="text" id="nama_mesin" placeholder="Nama Mesin" required class="px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                <input type="text" id="pic_order" placeholder="PIC Order" required class="px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                <button type="submit" id="btn-submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition-all">Simpan Order</button>
             </form>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left">
+                <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-100">
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Barang & Mesin</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Prioritas</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">PIC</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Barang / Mesin</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">No PR</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">No PO</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Status</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Waktu Input</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="data-body" class="divide-y divide-slate-50">
@@ -98,82 +48,125 @@
         </div>
     </div>
 
+    <div id="modal-admin" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 px-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-bold text-slate-800 mb-4">Update Data Gudang</h3>
+            <input type="hidden" id="edit-id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nomor PR</label>
+                    <input type="text" id="edit-pr" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nomor PO</label>
+                    <input type="text" id="edit-po" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Status Order</label>
+                    <select id="edit-status" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="Pending">Pending</option>
+                        <option value="On Process">On Process</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg transition-all text-sm">Batal</button>
+                <button onclick="saveAdminUpdate()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-all text-sm">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        // Gunakan URL & Key asli milikmu
-        const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5bmh2dmFvbHJqeGRjYnlvemxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Njg4NzEsImV4cCI6MjA4NTU0NDg3MX0.GSEfz8HVd49uEWXd70taR6FUv243VrFJKn6KlsZW-aQ'
+        const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co' //
+        const SUPABASE_ANON_KEY = 'KUNCI_ANON_ANDA_DI_SINI'
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-        // AMBIL DATA
+        // 1. FUNGSI TAMPILKAN DATA
         async function fetchOrders() {
-            const { data, error } = await supabase
-                .from('Order-sparepart')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            const body = document.getElementById('data-body');
+            const { data, error } = await supabase.from('Order-sparepart').select('*').order('created_at', { ascending: false });
             if (error) return console.error(error);
 
+            const body = document.getElementById('data-body');
             body.innerHTML = data.map(item => `
-                <tr class="group hover:bg-slate-50 transition-all">
+                <tr class="hover:bg-slate-50 transition-all">
                     <td class="px-6 py-4">
-                        <div class="font-bold text-slate-800">${item['Nama Barang'] || item.nama_barang || '-'}</div>
-                        <div class="text-xs text-slate-400 italic">${item['Nama Mesin'] || item.nama_mesin || 'Umum'}</div>
+                        <div class="font-bold text-slate-800">${item['Nama Barang'] || '-'}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${item['Nama Mesin'] || '-'}</div>
                     </td>
-                    <td class="px-6 py-4">
-                        <span class="text-xs px-2 py-1 rounded-md font-bold ${item['Skala Prioritas'] === 'Urgent' ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600'}">
-                            ${item['Skala Prioritas'] || item.skala_prioritas || 'Normal'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-slate-600">${item['PIC Order'] || item.pic_order || '-'}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 font-medium">${item.PR || '-'}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 font-medium">${item.PO || '-'}</td>
                     <td class="px-6 py-4 text-center">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${item.Status === 'Selesai' ? 'bg-green-500 text-white' : 'bg-amber-400 text-white'} shadow-sm">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.Status === 'Selesai' ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}">
                             ${item.Status || 'Pending'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-xs text-slate-400 font-mono">
-                        ${new Date(item.created_at).toLocaleString('id-ID', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="openModal('${item.id}', '${item.PR || ''}', '${item.PO || ''}', '${item.Status || 'Pending'}')" 
+                            class="text-indigo-600 hover:text-indigo-800 text-xs font-bold underline decoration-2 underline-offset-4">
+                            EDIT GUDANG
+                        </button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // SIMPAN DATA
-        const form = document.getElementById('order-form');
-        form.addEventListener('submit', async (e) => {
+        // 2. FUNGSI INPUT BARU (USER)
+        document.getElementById('order-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
-            const btnText = document.getElementById('btn-text');
-
             btn.disabled = true;
-            btnText.innerText = 'Menyimpan...';
 
-            // Mapping data sesuai nama kolom di Supabase (Pastikan nama ini sama persis di dashboard)
             const payload = {
                 'Nama Barang': document.getElementById('nama_barang').value,
                 'Nama Mesin': document.getElementById('nama_mesin').value,
                 'PIC Order': document.getElementById('pic_order').value,
-                'Spesifikasi': document.getElementById('spesifikasi').value,
-                'Skala Priorit.': document.getElementById('skala_prioritas').value,
-                'Status': document.getElementById('status').value,
-                'Keterangan': document.getElementById('keterangan').value
+                'Status': 'Pending'
             };
 
             const { error } = await supabase.from('Order-sparepart').insert([payload]);
-
-            if (error) {
-                alert('Kesalahan: ' + error.message);
-            } else {
-                form.reset();
+            if (error) alert(error.message);
+            else {
+                document.getElementById('order-form').reset();
                 fetchOrders();
             }
-
             btn.disabled = false;
-            btnText.innerText = 'Simpan Order';
         });
+
+        // 3. FUNGSI UPDATE (ADMIN GUDANG)
+        window.saveAdminUpdate = async () => {
+            const id = document.getElementById('edit-id').value;
+            const pr = document.getElementById('edit-pr').value;
+            const po = document.getElementById('edit-po').value;
+            const status = document.getElementById('edit-status').value;
+
+            const { error } = await supabase
+                .from('Order-sparepart')
+                .update({ 'PR': pr, 'PO': po, 'Status': status })
+                .eq('id', id);
+
+            if (error) alert(error.message);
+            else {
+                closeModal();
+                fetchOrders();
+            }
+        };
+
+        // Modal Helpers
+        window.openModal = (id, pr, po, status) => {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-pr').value = pr;
+            document.getElementById('edit-po').value = po;
+            document.getElementById('edit-status').value = status;
+            document.getElementById('modal-admin').classList.remove('hidden');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('modal-admin').classList.add('hidden');
+        };
 
         fetchOrders();
     </script>
