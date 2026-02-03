@@ -39,12 +39,12 @@ document.getElementById('order-form').addEventListener('submit', async (e) => {
     btn.innerText = "MENGIRIM...";
     btn.disabled = true;
 
-    // Pastikan ID 'satuan' di getElementById sama dengan yang ada di HTML (<select id="satuan">)
+    // Pastikan ID 'Satuan' di getElementById sama dengan yang ada di HTML (<select id="Satuan">)
     const payload = {
         'Nama Barang': document.getElementById('nama_barang').value,
         'Spesifikasi': document.getElementById('spesifikasi').value,
         'Quantity Order': parseInt(document.getElementById('qty').value),
-        'Satuan': document.getElementById('satuan').value, // Mengambil dari ID 'satuan', dikirim ke kolom 'Satuan'
+        'Satuan': document.getElementById('Satuan').value, // Mengambil dari ID 'Satuan', dikirim ke kolom 'Satuan'
         'Nama Mesin': document.getElementById('nama_mesin').value,
         'Nama Line': document.getElementById('nama_line').value,
         'PIC Order': document.getElementById('pic_order').value,
