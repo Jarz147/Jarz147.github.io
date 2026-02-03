@@ -46,10 +46,19 @@
             </form>
         </div>
 
-        <div class="relative mb-6 max-w-sm">
-            <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor font-black"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-        </div>
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+    <div class="relative max-w-sm flex-1">
+        <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor font-black"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+    </div>
+    
+    <select id="sort-select" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-600">
+        <option value="newest">Terbaru</option>
+        <option value="oldest">Terlama</option>
+        <option value="name-asc">Nama (A-Z)</option>
+        <option value="qty-desc">Qty Terbanyak</option>
+    </select>
+</div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
