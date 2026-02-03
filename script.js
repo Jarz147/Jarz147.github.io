@@ -17,7 +17,6 @@ async function checkSession() {
     } else {
         currentEmail = session.user.email;
         document.getElementById('user-display').innerText = `Active User: ${currentEmail}`;
-        
         if(currentEmail === ADMIN_EMAIL) {
             document.getElementById('admin-tools').classList.remove('hidden');
         }
@@ -27,79 +26,39 @@ async function checkSession() {
 
 // DATA FETCHING
 async function fetchOrders() {
-    const { data, error } = await supabase.from('Order-sparepart').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('Order-sparepart').select('*');
     if (!error) { 
         localData = data; 
-        renderTable(data); 
+        const sorted = sortData(data, document.getElementById('sort-select').value);
+        renderTable(sorted); 
     }
 }
-// script.js
 
-// Fungsi Utama Pengurutan
+// SORTING LOGIC
 function sortData(data, criteria) {
-    const sorted = [...data]; // Copy data asli agar tidak merusak localData
-    
+    const sorted = [...data];
     switch (criteria) {
-        case 'newest':
-            return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        case 'oldest':
-            return sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        case 'name-asc':
-            return sorted.sort((a, b) => (a['Nama Barang'] || "").localeCompare(b['Nama Barang'] || ""));
-        case 'qty-desc':
-            return sorted.sort((a, b) => (b['Quantity Order'] || 0) - (a['Quantity Order'] || 0));
-        default:
-            return sorted;
+        case 'newest': return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        case 'oldest': return sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        case 'name-asc': return sorted.sort((a, b) => (a['Nama Barang'] || "").localeCompare(b['Nama Barang'] || ""));
+        case 'qty-desc': return sorted.sort((a, b) => (b['Quantity Order'] || 0) - (a['Quantity Order'] || 0));
+        default: return sorted;
     }
 }
 
-// Event Listener untuk Dropdown Sort
-document.getElementById('sort-select').addEventListener('change', (e) => {
-    const criteria = e.target.value;
-    const searchValue = document.getElementById('search-input').value.toLowerCase();
-    
-    // Filter data dulu (jika ada pencarian), baru diurutkan
-    let filtered = localData.filter(i => 
-        i['Nama Barang']?.toLowerCase().includes(searchValue) || 
-        i['Status']?.toLowerCase().includes(searchValue) || 
-        i['Nama Mesin']?.toLowerCase().includes(searchValue)
-    );
-    
-    const sortedResult = sortData(filtered, criteria);
-    renderTable(sortedResult);
-});
-
-// Update juga Event Listener Search agar tetap menghargai pilihan Sort
-document.getElementById('search-input').addEventListener('input', (e) => {
-    const val = e.target.value.toLowerCase();
-    const sortCriteria = document.getElementById('sort-select').value;
-    
-    const filtered = localData.filter(i => 
-        i['Nama Barang']?.toLowerCase().includes(val) || 
-        i['Status']?.toLowerCase().includes(val) || 
-        i['Nama Mesin']?.toLowerCase().includes(val)
-    );
-    
-    const sortedResult = sortData(filtered, sortCriteria);
-    renderTable(sortedResult);
-});
-// script.js (Bagian renderTable)
+// RENDERING TABLE
 function renderTable(data) {
     const body = document.getElementById('data-body');
     const isAdmin = currentEmail === ADMIN_EMAIL;
 
     body.innerHTML = data.map(i => {
-        // Logika penentuan OPEN/CLOSE
         const isClose = i.Status === 'Selesai';
-        const progressText = isClose ? 'CLOSE' : 'OPEN';
-        const progressColor = isClose ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-700';
-
         return `
-            <tr class="${i.Status === 'Pending' ? 'bg-rose-50/30' : ''} hover:bg-slate-50 transition-all font-semibold border-b border-slate-50">
+            <tr class="${i.Status === 'Pending' ? 'bg-rose-50/30' : ''} hover:bg-slate-50 transition-all border-b border-slate-50">
                 <td class="px-6 py-5 text-[10px] text-slate-400 uppercase">${new Date(i.created_at).toLocaleDateString()}</td>
                 <td class="px-6 py-5">
                     <div class="text-slate-800">${i['Nama Barang']}</div>
-                    <div class="text-[10px] text-slate-400 italic">${i.Spesifikasi || ''}</div>
+                    <div class="text-[10px] text-slate-400 italic font-medium">${i.Spesifikasi || ''}</div>
                 </td>
                 <td class="px-6 py-5">
                     <div class="text-[10px] text-slate-600">${i['Nama Line']} / ${i['Nama Mesin']}</div>
@@ -119,19 +78,15 @@ function renderTable(data) {
                     ` : `<span class="text-[10px] text-slate-300 italic uppercase">User Only</span>`}
                 </td>
                 <td class="px-6 py-5 text-center">
-                    <span class="px-3 py-1.5 rounded-lg text-[10px] font-black ${progressColor}">
-                        ${progressText}
-                    </span>
+                    <span class="px-3 py-1.5 rounded-lg text-[10px] font-black ${isClose ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-700'}">${isClose ? 'CLOSE' : 'OPEN'}</span>
                 </td>
             </tr>
         `;
     }).join('');
 }
-// GLOBAL WINDOW FUNCTIONS
-window.logout = async () => { 
-    await supabase.auth.signOut(); 
-    window.location.href = 'login.html'; 
-};
+
+// WINDOW FUNCTIONS
+window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; };
 
 window.exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(localData);
@@ -161,7 +116,21 @@ window.saveAdminUpdate = async () => {
     fetchOrders();
 };
 
-// --- IMPORT EXCEL LOGIC DENGAN PENYESUAIAN KOLOM & PREVENSI ERROR BIGINT ---
+// LISTENERS
+document.getElementById('sort-select').addEventListener('change', (e) => {
+    const filtered = localData.filter(i => i['Nama Barang']?.toLowerCase().includes(document.getElementById('search-input').value.toLowerCase()));
+    renderTable(sortData(filtered, e.target.value));
+});
+
+document.getElementById('search-input').addEventListener('input', (e) => {
+    const val = e.target.value.toLowerCase();
+    const filtered = localData.filter(i => 
+        i['Nama Barang']?.toLowerCase().includes(val) || 
+        i['Nama Mesin']?.toLowerCase().includes(val)
+    );
+    renderTable(sortData(filtered, document.getElementById('sort-select').value));
+});
+
 document.getElementById('import-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -169,35 +138,20 @@ document.getElementById('import-excel').addEventListener('change', function(e) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        
-        if(confirm(`Import ${jsonData.length} data dari Excel?`)) {
-            const formatted = jsonData.map(row => {
-                // Konversi Qty ke angka bulat (Integer) untuk mencegah error bigint
-                const rawQty = row['Qty'] || row['Quantity Order'] || 0;
-                const cleanQty = Math.floor(parseFloat(rawQty));
-
-                return {
-                    'Nama Barang': row['Part Name'] || row['Nama Barang'] || '',
-                    'Spesifikasi': row['Spec'] || row['Spesifikasi'] || '',
-                    'Quantity Order': cleanQty,
-                    'Nama Mesin': row['Machine Name'] || row['Nama Mesin'] || '',
-                    'Nama Line': row['Line Name'] || row['Nama Line'] || '',
-                    'PIC Order': row['PIC'] || row['PIC Order'] || '',
-                    'Status': row['Status'] || 'Pending',
-                    'PR': row['PR'] || '',
-                    'PO': row['PO'] || ''
-                };
-            });
-            
+        if(confirm(`Import ${jsonData.length} data?`)) {
+            const formatted = jsonData.map(row => ({
+                'Nama Barang': row['Part Name'] || row['Nama Barang'] || '',
+                'Spesifikasi': row['Spec'] || row['Spesifikasi'] || '',
+                'Quantity Order': Math.floor(parseFloat(row['Qty'] || row['Quantity Order'] || 0)),
+                'Nama Mesin': row['Machine Name'] || row['Nama Mesin'] || '',
+                'Nama Line': row['Line Name'] || row['Nama Line'] || '',
+                'PIC Order': row['PIC'] || row['PIC Order'] || '',
+                'Status': 'Pending'
+            }));
             const { error } = await supabase.from('Order-sparepart').insert(formatted);
-            if(!error) { 
-                alert("Berhasil Import!"); 
-                fetchOrders(); 
-            } else { 
-                alert("Error: " + error.message); 
-            }
+            if(!error) { alert("Sukses!"); fetchOrders(); }
+            else alert("Gagal: " + error.message);
         }
-        // Reset input file agar bisa digunakan kembali
         document.getElementById('import-excel').value = "";
     };
     reader.readAsArrayBuffer(file);
@@ -219,15 +173,4 @@ document.getElementById('order-form').addEventListener('submit', async (e) => {
     fetchOrders();
 });
 
-document.getElementById('search-input').addEventListener('input', (e) => {
-    const val = e.target.value.toLowerCase();
-    const filtered = localData.filter(i => 
-        i['Nama Barang']?.toLowerCase().includes(val) || 
-        i['Status']?.toLowerCase().includes(val) || 
-        i['Nama Mesin']?.toLowerCase().includes(val)
-    );
-    renderTable(filtered);
-});
-
-// START
 checkSession();
