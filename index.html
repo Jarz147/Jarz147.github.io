@@ -44,19 +44,34 @@
 </head>
 <body class="bg-slate-50 min-h-screen pb-20 font-sans">
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        
-        <div class="mb-8 flex flex-col md:flex-row justify-between items-center border-b pb-6 gap-4">
-            <div class="flex items-center gap-4">
-                <img src="TEST 1 C.png" alt="Logo" class="h-14 w-auto object-contain hover:scale-105 transition-transform cursor-pointer" onclick="location.reload()"> 
-                <div>
-                    <h1 class="text-3xl font-black text-slate-800 tracking-tight">
-                        Sparepart <span class="text-indigo-600">Pro</span>
-                    </h1>
-                    <p id="user-display" class="text-slate-500 text-[10px] mt-1 font-bold uppercase tracking-widest"></p>
-                </div>
-            </div>
+    <div class="mb-8 flex flex-col md:flex-row justify-between items-center border-b pb-6 gap-4 relative">
+    
+    <div class="hidden md:flex w-full md:w-1/3 justify-start">
+        <div class="flex flex-col">
+            <p id="user-display" class="text-slate-500 text-[10px] font-bold uppercase tracking-widest"></p>
+            <span class="text-[9px] text-slate-300 font-medium">SYSTEM ONLINE</span>
+        </div>
+    </div>
 
+    <div class="flex flex-col items-center justify-center gap-1 w-full md:w-1/3">
+        <img src="TEST 1 C.png" alt="Logo" class="h-16 w-auto object-contain hover:scale-110 transition-transform cursor-pointer" onclick="location.reload()"> 
+        <div class="text-center">
+            <h1 class="text-xl font-black text-slate-800 tracking-tighter leading-none">
+                SPAREPART <span class="text-indigo-600">PRO</span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="flex gap-3 items-center justify-center md:justify-end w-full md:w-1/3">
+        <div id="admin-tools" class="hidden flex gap-2">
+            <button onclick="document.getElementById('import-excel').click()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[9px] font-black px-4 py-2 rounded-lg transition-all">
+                IMPORT
+            </button>
+        </div>
+        <button onclick="window.exportToExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-black px-4 py-2 rounded-lg transition-all shadow-md">EXPORT</button>
+        <button onclick="window.logout()" class="bg-white border border-rose-200 text-rose-500 text-[9px] font-black px-4 py-2 rounded-lg hover:bg-rose-50 transition-all">OUT</button>
+    </div>
+</div>
             <div class="flex gap-3 items-center">
                 <div id="admin-tools" class="hidden flex gap-3">
                     <input type="file" id="import-excel" class="hidden" accept=".xlsx, .xls">
