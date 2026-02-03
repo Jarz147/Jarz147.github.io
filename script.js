@@ -33,7 +33,56 @@ async function fetchOrders() {
         renderTable(data); 
     }
 }
+// script.js
 
+// Fungsi Utama Pengurutan
+function sortData(data, criteria) {
+    const sorted = [...data]; // Copy data asli agar tidak merusak localData
+    
+    switch (criteria) {
+        case 'newest':
+            return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        case 'oldest':
+            return sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        case 'name-asc':
+            return sorted.sort((a, b) => (a['Nama Barang'] || "").localeCompare(b['Nama Barang'] || ""));
+        case 'qty-desc':
+            return sorted.sort((a, b) => (b['Quantity Order'] || 0) - (a['Quantity Order'] || 0));
+        default:
+            return sorted;
+    }
+}
+
+// Event Listener untuk Dropdown Sort
+document.getElementById('sort-select').addEventListener('change', (e) => {
+    const criteria = e.target.value;
+    const searchValue = document.getElementById('search-input').value.toLowerCase();
+    
+    // Filter data dulu (jika ada pencarian), baru diurutkan
+    let filtered = localData.filter(i => 
+        i['Nama Barang']?.toLowerCase().includes(searchValue) || 
+        i['Status']?.toLowerCase().includes(searchValue) || 
+        i['Nama Mesin']?.toLowerCase().includes(searchValue)
+    );
+    
+    const sortedResult = sortData(filtered, criteria);
+    renderTable(sortedResult);
+});
+
+// Update juga Event Listener Search agar tetap menghargai pilihan Sort
+document.getElementById('search-input').addEventListener('input', (e) => {
+    const val = e.target.value.toLowerCase();
+    const sortCriteria = document.getElementById('sort-select').value;
+    
+    const filtered = localData.filter(i => 
+        i['Nama Barang']?.toLowerCase().includes(val) || 
+        i['Status']?.toLowerCase().includes(val) || 
+        i['Nama Mesin']?.toLowerCase().includes(val)
+    );
+    
+    const sortedResult = sortData(filtered, sortCriteria);
+    renderTable(sortedResult);
+});
 // script.js (Bagian renderTable)
 function renderTable(data) {
     const body = document.getElementById('data-body');
