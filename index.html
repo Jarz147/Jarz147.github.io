@@ -30,10 +30,10 @@
     <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center border-b pb-6 gap-4 relative">
             <div class="flex flex-col w-full md:w-1/3 items-center md:items-start text-center md:text-left">
-                <h1 class="text-2xl font-black tracking-tight leading-none">
+                <h1 class="text-2xl font-black tracking-tight leading-none text-slate-800">
                     Sparepart <span class="text-indigo-600">Pro</span>
                 </h1>
-                <p id="user-display" class="mt-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">Memuat user...</p>
+                <p id="user-display" class="mt-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest italic">Memuat user...</p>
             </div>
 
             <div class="md:absolute md:left-1/2 md:-translate-x-1/2">
@@ -79,8 +79,8 @@
 
         <div class="flex flex-col md:flex-row gap-4 mb-6 items-center">
             <div class="relative flex-1 w-full">
-                <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold">
-                <span class="absolute left-4 top-3.5 opacity-30">🔍</span>
+                <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold italic">
+                <span class="absolute left-4 top-3.5 opacity-30 text-lg">🔍</span>
             </div>
         </div>
 
@@ -90,8 +90,9 @@
                     <thead>
                         <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
                             <th class="px-6 py-5 text-center">Tgl</th>
-                            <th class="px-6 py-5">Detail Barang</th>
-                            <th class="px-6 py-5 text-center">Lokasi / Qty</th>
+                            <th class="px-6 py-5">Spesifikasi</th>
+                            <th class="px-6 py-5 text-center">Qty</th>
+                            <th class="px-6 py-5 text-center uppercase tracking-tighter">Satuan</th> <th class="px-6 py-5">Mesin / Line</th>
                             <th class="px-6 py-5">No. PR/PO</th>
                             <th class="px-6 py-5 text-center">Status Progress</th>
                             <th class="px-6 py-5 text-center">Aksi</th>
@@ -106,16 +107,16 @@
 
     <div id="modal-admin" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl">
-            <h3 class="font-black text-slate-800 mb-6 uppercase tracking-tight text-xl text-center">Update Status Barang</h3>
+            <h3 class="font-black text-slate-800 mb-6 uppercase tracking-tight text-xl text-center">Update Warehouse</h3>
             <input type="hidden" id="edit-id">
             <div class="space-y-4">
                 <div>
                     <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Nomor PR</label>
-                    <input type="text" id="edit-pr" placeholder="Contoh: PR-2024-001" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
+                    <input type="text" id="edit-pr" placeholder="Input nomor PR..." class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
                 </div>
                 <div>
                     <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Nomor PO</label>
-                    <input type="text" id="edit-po" placeholder="Contoh: PO-2024-001" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
+                    <input type="text" id="edit-po" placeholder="Input nomor PO..." class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
                 </div>
                 <div>
                     <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Status Progress</label>
@@ -128,7 +129,7 @@
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="window.closeModal()" class="flex-1 py-4 bg-slate-100 font-black rounded-2xl text-slate-400 text-[10px] uppercase">Batal</button>
-                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-black rounded-2xl text-white text-[10px] uppercase shadow-lg shadow-indigo-200">Simpan Update</button>
+                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-black rounded-2xl text-white text-[10px] uppercase shadow-lg shadow-indigo-200">Simpan</button>
             </div>
         </div>
     </div>
