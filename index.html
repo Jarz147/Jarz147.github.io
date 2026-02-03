@@ -4,34 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sparepart Pro - Control System</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="MTC.png">
+    <link rel="apple-touch-icon" href="MTC.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
         .table-container { max-height: 60vh; overflow-y: auto; overflow-x: auto; }
         thead th { position: sticky; top: 0; z-index: 20; background-color: #f8fafc; box-shadow: inset 0 -1px 0 #e2e8f0; }
-        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
-        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        #modal-admin:not(.hidden) { display: flex; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .table-container::-webkit-scrollbar { width: 4px; height: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        #modal-admin:not(.hidden) { display: flex; animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20 font-sans text-slate-900">
+
     <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center border-b pb-6 gap-4 relative">
-            <div class="flex flex-col w-full md:w-1/3 items-center md:items-start text-center md:text-left">
-                <h1 class="text-2xl font-black tracking-tight leading-none text-slate-800">Sparepart <span class="text-indigo-600">Pro</span></h1>
-                <p id="user-display" class="mt-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">Memuat user...</p>
+            <div class="flex flex-col w-full md:w-1/3 items-center md:items-start">
+                <h1 class="text-2xl font-black tracking-tight text-slate-800">
+                    Sparepart <span class="text-indigo-600">Pro</span>
+                </h1>
+                <p id="user-display" class="mt-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest italic">Memuat user...</p>
             </div>
+
             <div class="md:absolute md:left-1/2 md:-translate-x-1/2">
-                <img src="MTC.png" alt="Logo" class="h-16 w-auto object-contain cursor-pointer" onclick="location.reload()"> 
+                <img src="TEST 1 C.png" alt="Logo" class="h-16 w-auto object-contain cursor-pointer hover:scale-105 transition-transform" onclick="location.reload()"> 
             </div>
+
             <div class="flex gap-2 justify-center md:justify-end w-full md:w-1/3">
                 <div id="admin-tools" class="hidden flex gap-2">
-                    <button onclick="window.exportToExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-black px-4 py-2.5 rounded-xl shadow-md uppercase transition-all">Export Report</button>
+                    <button onclick="window.exportToExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-black px-4 py-2.5 rounded-xl shadow-md uppercase">Export Report</button>
                 </div>
-                <button onclick="window.logout()" class="bg-white border border-rose-200 text-rose-500 text-[9px] font-black px-4 py-2.5 rounded-xl hover:bg-rose-50 uppercase transition-all">Logout</button>
+                <button onclick="window.logout()" class="bg-white border border-rose-200 text-rose-500 text-[9px] font-black px-4 py-2.5 rounded-xl hover:bg-rose-50 uppercase">Logout</button>
             </div>
         </div>
 
@@ -42,26 +54,30 @@
             <form id="order-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="text" id="nama_barang" required placeholder="Nama Barang" class="md:col-span-2 px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
                 <input type="text" id="spesifikasi" placeholder="Spesifikasi" class="md:col-span-2 px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
+                
                 <div class="flex gap-2">
                     <input type="number" id="qty" required placeholder="Qty" class="w-2/3 px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
                     <select id="satuan" required class="w-1/3 px-2 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-[10px] font-black uppercase text-slate-500 border-transparent cursor-pointer">
-                        <option value="PCS">Pcs</option><option value="ROLL">Roll</option><option value="METER">Meter</option><option value="SET">Set</option>
+                        <option value="PCS">Pcs</option>
+                        <option value="ROLL">Roll</option>
+                        <option value="METER">Meter</option>
+                        <option value="SET">Set</option>
                     </select>
                 </div>
+                
                 <input type="text" id="nama_mesin" required placeholder="Nama Mesin" class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
                 <input type="text" id="nama_line" required placeholder="Nama Line" class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
                 <input type="text" id="pic_order" required placeholder="PIC Request" class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
-                <div class="md:col-span-4 flex justify-end mt-2">
-                    <button type="submit" id="btn-submit" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-12 rounded-2xl transition-all shadow-xl shadow-indigo-100 text-[10px] uppercase tracking-widest">Kirim Permintaan</button>
+                
+                <div class="md:col-span-4 flex justify-end">
+                    <button type="submit" id="btn-submit" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-12 rounded-2xl shadow-xl shadow-indigo-100 text-[10px] uppercase tracking-widest">Kirim Permintaan</button>
                 </div>
             </form>
         </div>
 
-        <div class="mb-6">
-            <div class="relative w-full">
-                <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold italic">
-                <span class="absolute left-4 top-3.5 opacity-30 text-lg">🔍</span>
-            </div>
+        <div class="mb-6 relative">
+            <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold italic">
+            <span class="absolute left-4 top-3.5 opacity-30 text-lg">🔍</span>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -70,7 +86,7 @@
                     <thead>
                         <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                             <th class="px-6 py-5 text-center">Tgl</th>
-                            <th class="px-6 py-5">Spesifikasi</th>
+                            <th class="px-6 py-5">Detail Barang</th>
                             <th class="px-6 py-5 text-center">Qty</th>
                             <th class="px-6 py-5 text-center">Satuan</th>
                             <th class="px-6 py-5">Mesin / Line</th>
@@ -91,18 +107,30 @@
             <h3 class="font-black text-slate-800 mb-6 uppercase tracking-tight text-xl text-center">Update Status</h3>
             <input type="hidden" id="edit-id">
             <div class="space-y-4">
-                <input type="text" id="edit-pr" placeholder="Nomor PR" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
-                <input type="text" id="edit-po" placeholder="Nomor PO" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
-                <select id="edit-status" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-black uppercase text-xs border-transparent">
-                    <option value="Pending">Pending</option><option value="On Process">On Process</option><option value="Selesai">Selesai</option>
-                </select>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Nomor PR</label>
+                    <input type="text" id="edit-pr" placeholder="Input nomor PR..." class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Nomor PO</label>
+                    <input type="text" id="edit-po" placeholder="Input nomor PO..." class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Status Progress</label>
+                    <select id="edit-status" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-black uppercase text-xs cursor-pointer border-transparent">
+                        <option value="Pending">Waiting</option>
+                        <option value="On Process">On Process</option>
+                        <option value="Selesai">Done</option>
+                    </select>
+                </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="window.closeModal()" class="flex-1 py-4 bg-slate-100 font-black rounded-2xl text-slate-400 text-[10px] uppercase">Batal</button>
-                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-black rounded-2xl text-white text-[10px] uppercase shadow-lg shadow-indigo-200">Simpan</button>
+                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-black rounded-2xl text-white text-[10px] uppercase shadow-lg shadow-indigo-200">Simpan Update</button>
             </div>
         </div>
     </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
