@@ -8,7 +8,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Sparepart Pro">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/png" href="MTC.png">
     <link rel="apple-touch-icon" href="MTC.png">
@@ -38,20 +37,18 @@
             </div>
 
             <div class="md:absolute md:left-1/2 md:-translate-x-1/2">
-                <img src="TEST 1 C.png" alt="Logo" class="h-16 w-auto object-contain cursor-pointer hover:rotate-3 transition-transform" onclick="location.reload()"> 
+                <img src="MTC.png" alt="Logo" class="h-16 w-auto object-contain cursor-pointer hover:rotate-3 transition-transform" onclick="location.reload()"> 
             </div>
 
             <div class="flex gap-2 justify-center md:justify-end w-full md:w-1/3">
                 <div id="admin-tools" class="hidden flex gap-2">
-                    <input type="file" id="import-excel" class="hidden" accept=".xlsx, .xls">
-                    <button onclick="document.getElementById('import-excel').click()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[9px] font-black px-4 py-2.5 rounded-xl uppercase transition-all">Import</button>
+                    <button onclick="window.exportToExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-black px-4 py-2.5 rounded-xl shadow-md uppercase transition-all">Export Report</button>
                 </div>
-                <button onclick="window.exportToExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-black px-4 py-2.5 rounded-xl shadow-md uppercase transition-all">Export</button>
                 <button onclick="window.logout()" class="bg-white border border-rose-200 text-rose-500 text-[9px] font-black px-4 py-2.5 rounded-xl hover:bg-rose-50 uppercase transition-all">Logout</button>
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mb-8">
+        <div id="form-container" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mb-8">
             <h2 class="text-[10px] font-black mb-6 text-slate-400 uppercase tracking-widest flex items-center gap-2">
                 <span class="bg-indigo-600 w-1.5 h-4 rounded-full"></span> Form Permintaan Barang
             </h2>
@@ -62,11 +59,11 @@
                 <div class="flex gap-2">
                     <input type="number" id="qty" required placeholder="Qty" class="w-2/3 px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
                     <select id="satuan" required class="w-1/3 px-2 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-[10px] font-black uppercase text-slate-500 border-transparent cursor-pointer">
-                        <option value="pcs">Pcs</option>
-                        <option value="roll">Roll</option>
-                        <option value="meter">Meter</option>
-                        <option value="set">Set</option>
-                        <option value="drum">Drum</option>
+                        <option value="PCS">Pcs</option>
+                        <option value="ROLL">Roll</option>
+                        <option value="METER">Meter</option>
+                        <option value="SET">Set</option>
+                        <option value="DRUM">Drum</option>
                     </select>
                 </div>
                 
@@ -80,16 +77,11 @@
             </form>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-            <div class="relative flex-1">
+        <div class="flex flex-col md:flex-row gap-4 mb-6 items-center">
+            <div class="relative flex-1 w-full">
                 <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold">
                 <span class="absolute left-4 top-3.5 opacity-30">🔍</span>
             </div>
-            <select id="sort-select" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm text-sm font-bold text-slate-600 outline-none">
-                <option value="newest">Terbaru</option>
-                <option value="oldest">Terlama</option>
-                <option value="name-asc">Nama (A-Z)</option>
-            </select>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -101,11 +93,12 @@
                             <th class="px-6 py-5">Detail Barang</th>
                             <th class="px-6 py-5 text-center">Lokasi / Qty</th>
                             <th class="px-6 py-5">No. PR/PO</th>
-                            <th class="px-6 py-5 text-center">Status</th>
+                            <th class="px-6 py-5 text-center">Status Progress</th>
                             <th class="px-6 py-5 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm font-semibold text-slate-700"></tbody>
+                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm font-semibold text-slate-700">
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -113,20 +106,29 @@
 
     <div id="modal-admin" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl">
-            <h3 class="font-black text-slate-800 mb-6 uppercase tracking-tight text-xl text-center">Update Warehouse</h3>
+            <h3 class="font-black text-slate-800 mb-6 uppercase tracking-tight text-xl text-center">Update Status Barang</h3>
             <input type="hidden" id="edit-id">
             <div class="space-y-4">
-                <input type="text" id="edit-pr" placeholder="Nomor PR" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
-                <input type="text" id="edit-po" placeholder="Nomor PO" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
-                <select id="edit-status" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-black uppercase text-xs border-transparent">
-                    <option value="Pending">Waiting</option>
-                    <option value="On Process">On Process</option>
-                    <option value="Selesai">Done</option>
-                </select>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Nomor PR</label>
+                    <input type="text" id="edit-pr" placeholder="Contoh: PR-2024-001" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Nomor PO</label>
+                    <input type="text" id="edit-po" placeholder="Contoh: PO-2024-001" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold border-transparent">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Status Progress</label>
+                    <select id="edit-status" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-black uppercase text-xs cursor-pointer border-transparent">
+                        <option value="Pending">Waiting</option>
+                        <option value="On Process">On Process</option>
+                        <option value="Selesai">Done</option>
+                    </select>
+                </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="window.closeModal()" class="flex-1 py-4 bg-slate-100 font-black rounded-2xl text-slate-400 text-[10px] uppercase">Batal</button>
-                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-black rounded-2xl text-white text-[10px] uppercase shadow-lg shadow-indigo-200">Simpan</button>
+                <button onclick="window.saveAdminUpdate()" class="flex-1 py-4 bg-indigo-600 font-black rounded-2xl text-white text-[10px] uppercase shadow-lg shadow-indigo-200">Simpan Update</button>
             </div>
         </div>
     </div>
