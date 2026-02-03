@@ -1,0 +1,20 @@
+{
+  "short_name": "SparepartPro",
+  "name": "Sparepart Pro Control System",
+  "icons": [
+    {
+      "src": "MTC.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "MTC.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "theme_color": "#4f46e5",
+  "background_color": "#f8fafc"
+}
