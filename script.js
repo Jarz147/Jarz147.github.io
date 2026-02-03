@@ -11,81 +11,123 @@ let localData = [];
 
 // --- SESSION CHECK ---
 async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-        window.location.href = 'login.html';
-    } else {
-        currentEmail = session.user.email;
-        document.getElementById('user-display').innerText = `User: ${currentEmail}`;
-        if(currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-            document.getElementById('admin-tools')?.classList.remove('hidden');
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+        } else {
+            currentEmail = session.user.email;
+            const userDisplay = document.getElementById('user-display');
+            if (userDisplay) userDisplay.innerText = `User: ${currentEmail}`;
+            
+            if (currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                document.getElementById('admin-tools')?.classList.remove('hidden');
+            }
+            fetchOrders();
         }
-        fetchOrders();
+    } catch (err) {
+        console.error("Session error:", err);
     }
 }
 
 // --- DATA ACTIONS ---
 async function fetchOrders() {
-    const { data, error } = await supabase.from('Order-sparepart').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase
+        .from('Order-sparepart')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
     if (!error) {
         localData = data;
         renderTable(data);
     }
 }
 
-document.getElementById('order-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('btn-submit');
-    btn.innerText = "MENGIRIM...";
-    btn.disabled = true;
+// --- EVENT SUBMIT (FORM) ---
+const orderForm = document.getElementById('order-form');
+if (orderForm) {
+    orderForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        
+        // Ambil elemen dengan ID huruf kecil (standar HTML)
+        const elNama = document.getElementById('nama_barang');
+        const elSpec = document.getElementById('spesifikasi');
+        const elQty = document.getElementById('qty');
+        const elSatuan = document.getElementById('satuan'); // Pastikan di HTML id="satuan"
+        const elMesin = document.getElementById('nama_mesin');
+        const elLine = document.getElementById('nama_line');
+        const elPic = document.getElementById('pic_order');
 
-    // Pastikan ID 'Satuan' di getElementById sama dengan yang ada di HTML (<select id="Satuan">)
-    const payload = {
-        'Nama Barang': document.getElementById('nama_barang').value,
-        'Spesifikasi': document.getElementById('spesifikasi').value,
-        'Quantity Order': parseInt(document.getElementById('qty').value),
-        'Satuan': document.getElementById('Satuan').value, // Mengambil dari ID 'Satuan', dikirim ke kolom 'Satuan'
-        'Nama Mesin': document.getElementById('nama_mesin').value,
-        'Nama Line': document.getElementById('nama_line').value,
-        'PIC Order': document.getElementById('pic_order').value,
-        'Status': 'Pending'
-    };
+        // Validasi Null: Mencegah error "properties of null (reading value)"
+        if (!elNama || !elQty || !elSatuan) {
+            alert("Error: Elemen form tidak ditemukan. Periksa ID 'nama_barang', 'qty', dan 'satuan' di HTML Anda.");
+            return;
+        }
 
-    const { error } = await supabase.from('Order-sparepart').insert([payload]);
-    if (error) {
-        alert("Error: " + error.message);
-    } else {
-        document.getElementById('order-form').reset();
-        fetchOrders();
-    }
-    btn.innerText = "KIRIM PERMINTAAN";
-    btn.disabled = false;
-});
+        btn.innerText = "MENGIRIM...";
+        btn.disabled = true;
+
+        const payload = {
+            'Nama Barang': elNama.value,
+            'Spesifikasi': elSpec ? elSpec.value : '',
+            'Quantity Order': parseInt(elQty.value),
+            'Satuan': elSatuan.value, // Mengirim ke kolom "Satuan" di Supabase
+            'Nama Mesin': elMesin ? elMesin.value : '',
+            'Nama Line': elLine ? elLine.value : '',
+            'PIC Order': elPic ? elPic.value : '',
+            'Status': 'Pending'
+        };
+
+        const { error } = await supabase.from('Order-sparepart').insert([payload]);
+        
+        if (error) {
+            alert("Error: " + error.message);
+        } else {
+            orderForm.reset();
+            fetchOrders();
+            alert("Berhasil mengirim permintaan!");
+        }
+        
+        btn.innerText = "KIRIM PERMINTAAN";
+        btn.disabled = false;
+    });
+}
 
 // --- RENDER TABLE ---
 function renderTable(data) {
     const body = document.getElementById('data-body');
+    if (!body) return;
+
     const isAdmin = currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
     body.innerHTML = data.map(i => {
         const isDone = i.Status === 'Selesai';
+        const isProcess = i.Status === 'On Process';
+        
         return `
             <tr class="hover:bg-slate-50 transition-all border-b border-slate-50">
-                <td class="px-6 py-5 text-[10px] text-slate-400 font-mono text-center">${new Date(i.created_at).toLocaleDateString('id-ID')}</td>
+                <td class="px-6 py-5 text-[10px] text-slate-400 font-mono text-center">
+                    ${new Date(i.created_at).toLocaleDateString('id-ID')}
+                </td>
                 <td class="px-6 py-5">
                     <div class="text-slate-800 font-bold text-sm uppercase">${i['Nama Barang']}</div>
                     <div class="text-[10px] text-slate-400 italic">${i.Spesifikasi || '-'}</div>
                 </td>
-                <td class="px-6 py-5">
-                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">${i['Nama Line']} | ${i['Nama Mesin']}</div>
-                    <div class="text-indigo-600 font-black text-xs uppercase">${i['Quantity Order']} ${i.Satuan || 'PCS'}</div>
+                <td class="px-6 py-5 text-center">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
+                        ${i['Nama Line']} | ${i['Nama Mesin']}
+                    </div>
+                    <div class="text-indigo-600 font-black text-xs uppercase">
+                        ${i['Quantity Order']} ${i.Satuan || 'PCS'}
+                    </div>
                 </td>
                 <td class="px-6 py-5 text-[10px] text-slate-500 font-mono">
                     PR: ${i.PR || '-'}<br>PO: ${i.PO || '-'}
                 </td>
                 <td class="px-6 py-5 text-center">
                     <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest 
-                    ${isDone ? 'bg-emerald-100 text-emerald-700' : i.Status === 'On Process' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">
+                    ${isDone ? 'bg-emerald-100 text-emerald-700' : isProcess ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">
                         ${i.Status || 'Pending'}
                     </span>
                 </td>
@@ -100,16 +142,22 @@ function renderTable(data) {
     }).join('');
 }
 
-// --- UTILITIES ---
+// --- UTILITIES (Global Scope) ---
 window.openModal = (id, pr, po, status) => {
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-pr').value = pr;
-    document.getElementById('edit-po').value = po;
-    document.getElementById('edit-status').value = status;
-    document.getElementById('modal-admin').classList.remove('hidden');
+    const elId = document.getElementById('edit-id');
+    const elPr = document.getElementById('edit-pr');
+    const elPo = document.getElementById('edit-po');
+    const elStatus = document.getElementById('edit-status');
+    
+    if(elId) elId.value = id;
+    if(elPr) elPr.value = pr;
+    if(elPo) elPo.value = po;
+    if(elStatus) elStatus.value = status;
+    
+    document.getElementById('modal-admin')?.classList.remove('hidden');
 };
 
-window.closeModal = () => document.getElementById('modal-admin').classList.add('hidden');
+window.closeModal = () => document.getElementById('modal-admin')?.classList.add('hidden');
 
 window.saveAdminUpdate = async () => {
     const id = document.getElementById('edit-id').value;
@@ -122,10 +170,15 @@ window.saveAdminUpdate = async () => {
     if (!error) {
         window.closeModal();
         fetchOrders();
+    } else {
+        alert("Gagal update: " + error.message);
     }
 };
 
-window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; };
+window.logout = async () => { 
+    await supabase.auth.signOut(); 
+    window.location.href = 'login.html'; 
+};
 
 window.exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(localData);
@@ -134,15 +187,16 @@ window.exportToExcel = () => {
     XLSX.writeFile(wb, "Sparepart_Report.xlsx");
 };
 
-// --- SEARCH & SORT ---
-document.getElementById('search-input').addEventListener('input', (e) => {
+// --- SEARCH ---
+document.getElementById('search-input')?.addEventListener('input', (e) => {
     const val = e.target.value.toLowerCase();
     const filtered = localData.filter(i => 
-        i['Nama Barang'].toLowerCase().includes(val) || 
-        i['Nama Mesin'].toLowerCase().includes(val) ||
-        i.Status.toLowerCase().includes(val)
+        (i['Nama Barang'] && i['Nama Barang'].toLowerCase().includes(val)) || 
+        (i['Nama Mesin'] && i['Nama Mesin'].toLowerCase().includes(val)) ||
+        (i.Status && i.Status.toLowerCase().includes(val))
     );
     renderTable(filtered);
 });
 
+// Mulai Aplikasi
 checkSession();
