@@ -67,7 +67,7 @@ function renderTable(data) {
     `).join('');
 }
 
-// GLOBAL WINDOW FUNCTIONS (Dibutuhkan agar bisa dipanggil dari HTML onclick)
+// GLOBAL WINDOW FUNCTIONS
 window.logout = async () => { 
     await supabase.auth.signOut(); 
     window.location.href = 'login.html'; 
@@ -101,7 +101,7 @@ window.saveAdminUpdate = async () => {
     fetchOrders();
 };
 
-// EVENT LISTENERS
+// --- IMPORT EXCEL LOGIC DENGAN PENYESUAIAN KOLOM & PREVENSI ERROR BIGINT ---
 document.getElementById('import-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -111,22 +111,34 @@ document.getElementById('import-excel').addEventListener('change', function(e) {
         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
         
         if(confirm(`Import ${jsonData.length} data dari Excel?`)) {
-            const formatted = jsonData.map(row => ({
-                'Nama Barang': row['Nama Barang'],
-                'Spesifikasi': row['Spesifikasi'],
-                'Quantity Order': row['Quantity Order'],
-                'Nama Mesin': row['Nama Mesin'],
-                'Nama Line': row['Nama Line'],
-                'PIC Order': row['PIC Order'],
-                'Status': row['Status'] || 'Pending',
-                'PR': row['PR'] || '',
-                'PO': row['PO'] || ''
-            }));
+            const formatted = jsonData.map(row => {
+                // Konversi Qty ke angka bulat (Integer) untuk mencegah error bigint
+                const rawQty = row['Qty'] || row['Quantity Order'] || 0;
+                const cleanQty = Math.floor(parseFloat(rawQty));
+
+                return {
+                    'Nama Barang': row['Part Name'] || row['Nama Barang'] || '',
+                    'Spesifikasi': row['Spec'] || row['Spesifikasi'] || '',
+                    'Quantity Order': cleanQty,
+                    'Nama Mesin': row['Machine Name'] || row['Nama Mesin'] || '',
+                    'Nama Line': row['Line Name'] || row['Nama Line'] || '',
+                    'PIC Order': row['PIC'] || row['PIC Order'] || '',
+                    'Status': row['Status'] || 'Pending',
+                    'PR': row['PR'] || '',
+                    'PO': row['PO'] || ''
+                };
+            });
             
             const { error } = await supabase.from('Order-sparepart').insert(formatted);
-            if(!error) { alert("Berhasil Import!"); fetchOrders(); }
-            else { alert("Error: " + error.message); }
+            if(!error) { 
+                alert("Berhasil Import!"); 
+                fetchOrders(); 
+            } else { 
+                alert("Error: " + error.message); 
+            }
         }
+        // Reset input file agar bisa digunakan kembali
+        document.getElementById('import-excel').value = "";
     };
     reader.readAsArrayBuffer(file);
 });
