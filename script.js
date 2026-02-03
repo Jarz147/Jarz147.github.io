@@ -20,9 +20,18 @@ async function checkSession() {
             const userDisplay = document.getElementById('user-display');
             if (userDisplay) userDisplay.innerText = `User: ${currentEmail}`;
             
+            const formContainer = document.getElementById('form-container');
+            const adminTools = document.getElementById('admin-tools');
+
+            // Jika ADMIN login
             if (currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                document.getElementById('admin-tools')?.classList.remove('hidden');
+                adminTools?.classList.remove('hidden'); // Munculkan tombol Admin
+                formContainer?.classList.add('hidden'); // SEMBUNYIKAN FORM
+            } else {
+                adminTools?.classList.add('hidden');
+                formContainer?.classList.remove('hidden'); // Munculkan Form untuk user biasa
             }
+            
             fetchOrders();
         }
     } catch (err) {
@@ -43,37 +52,31 @@ async function fetchOrders() {
     }
 }
 
-// --- EVENT SUBMIT (FORM) ---
+// --- EVENT SUBMIT FORM ---
 const orderForm = document.getElementById('order-form');
 if (orderForm) {
     orderForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btn-submit');
         
+        // Ambil elemen
         const elNama = document.getElementById('nama_barang');
-        const elSpec = document.getElementById('spesifikasi');
-        const elQty = document.getElementById('qty');
         const elSatuan = document.getElementById('satuan');
-        const elMesin = document.getElementById('nama_mesin');
-        const elLine = document.getElementById('nama_line');
-        const elPic = document.getElementById('pic_order');
+        const elQty = document.getElementById('qty');
 
-        if (!elNama || !elQty || !elSatuan) {
-            alert("Terjadi kesalahan pada elemen form!");
-            return;
-        }
+        if (!elNama || !elSatuan || !elQty) return;
 
         btn.innerText = "MENGIRIM...";
         btn.disabled = true;
 
         const payload = {
             'Nama Barang': elNama.value,
-            'Spesifikasi': elSpec ? elSpec.value : '',
+            'Spesifikasi': document.getElementById('spesifikasi').value,
             'Quantity Order': parseInt(elQty.value),
-            'Satuan': elSatuan.value, // Kolom 'Satuan' (S besar) di Supabase
-            'Nama Mesin': elMesin ? elMesin.value : '',
-            'Nama Line': elLine ? elLine.value : '',
-            'PIC Order': elPic ? elPic.value : '',
+            'Satuan': elSatuan.value, 
+            'Nama Mesin': document.getElementById('nama_mesin').value,
+            'Nama Line': document.getElementById('nama_line').value,
+            'PIC Order': document.getElementById('pic_order').value,
             'Status': 'Pending'
         };
 
@@ -84,7 +87,6 @@ if (orderForm) {
         } else {
             orderForm.reset();
             fetchOrders();
-            alert("Permintaan berhasil dikirim!");
         }
         
         btn.innerText = "KIRIM PERMINTAAN";
@@ -140,7 +142,7 @@ function renderTable(data) {
     }).join('');
 }
 
-// --- GLOBAL UTILITIES ---
+// --- UTILITIES (Global) ---
 window.openModal = (id, pr, po, status) => {
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-pr').value = pr;
@@ -183,21 +185,11 @@ window.exportToExcel = () => {
 document.getElementById('search-input')?.addEventListener('input', (e) => {
     const val = e.target.value.toLowerCase();
     const filtered = localData.filter(i => 
-        (i['Nama Barang']?.toLowerCase().includes(val)) || 
-        (i['Nama Mesin']?.toLowerCase().includes(val)) ||
-        (i.Status?.toLowerCase().includes(val))
+        (i['Nama Barang'] && i['Nama Barang'].toLowerCase().includes(val)) || 
+        (i['Nama Mesin'] && i['Nama Mesin'].toLowerCase().includes(val)) ||
+        (i.Status && i.Status.toLowerCase().includes(val))
     );
     renderTable(filtered);
-});
-
-// --- SORTING ---
-document.getElementById('sort-select')?.addEventListener('change', (e) => {
-    const mode = e.target.value;
-    let sortedData = [...localData];
-    if (mode === 'newest') sortedData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    else if (mode === 'oldest') sortedData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    else if (mode === 'name-asc') sortedData.sort((a, b) => a['Nama Barang'].localeCompare(b['Nama Barang']));
-    renderTable(sortedData);
 });
 
 checkSession();
