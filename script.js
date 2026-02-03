@@ -1,6 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// INITIALIZATION
+// KONFIGURASI SUPABASE (Gunakan Key Anda)
 const SUPABASE_URL = 'https://synhvvaolrjxdcbyozld.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5bmh2dmFvbHJqeGRjYnlvemxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Njg4NzEsImV4cCI6MjA4NTU0NDg3MX0.GSEfz8HVd49uEWXd70taR6FUv243VrFJKn6KlsZW-aQ'
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -9,14 +9,14 @@ const ADMIN_EMAIL = "admin@order-sparepart.com";
 let currentEmail = "";
 let localData = [];
 
-// SESSION CHECK
+// CEK LOGIN
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
         window.location.href = 'login.html';
     } else {
         currentEmail = session.user.email;
-        document.getElementById('user-display').innerText = `Active User: ${currentEmail}`;
+        document.getElementById('user-display').innerText = `Active: ${currentEmail}`;
         if(currentEmail === ADMIN_EMAIL) {
             document.getElementById('admin-tools').classList.remove('hidden');
         }
@@ -24,17 +24,16 @@ async function checkSession() {
     }
 }
 
-// DATA FETCHING
+// AMBIL DATA
 async function fetchOrders() {
     const { data, error } = await supabase.from('Order-sparepart').select('*');
     if (!error) { 
         localData = data; 
-        const sorted = sortData(data, document.getElementById('sort-select').value);
-        renderTable(sorted); 
+        renderTable(sortData(data, document.getElementById('sort-select').value)); 
     }
 }
 
-// SORTING LOGIC
+// SORTING
 function sortData(data, criteria) {
     const sorted = [...data];
     switch (criteria) {
@@ -46,7 +45,7 @@ function sortData(data, criteria) {
     }
 }
 
-// RENDERING TABLE
+// RENDER TABEL
 function renderTable(data) {
     const body = document.getElementById('data-body');
     const isAdmin = currentEmail === ADMIN_EMAIL;
@@ -54,10 +53,10 @@ function renderTable(data) {
     body.innerHTML = data.map(i => {
         const isClose = i.Status === 'Selesai';
         return `
-            <tr class="${i.Status === 'Pending' ? 'bg-rose-50/30' : ''} hover:bg-slate-50 transition-all border-b border-slate-50">
+            <tr class="hover:bg-slate-50 transition-all border-b border-slate-50">
                 <td class="px-6 py-5 text-[10px] text-slate-400 uppercase">${new Date(i.created_at).toLocaleDateString()}</td>
                 <td class="px-6 py-5">
-                    <div class="text-slate-800">${i['Nama Barang']}</div>
+                    <div class="text-slate-800 font-bold">${i['Nama Barang']}</div>
                     <div class="text-[10px] text-slate-400 italic font-medium">${i.Spesifikasi || ''}</div>
                 </td>
                 <td class="px-6 py-5">
@@ -68,33 +67,32 @@ function renderTable(data) {
                     PR: ${i.PR || '-'}<br>PO: ${i.PO || '-'}
                 </td>
                 <td class="px-6 py-5 text-center">
-                    <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${i.Status === 'Selesai' ? 'bg-green-100 text-green-700' : i.Status === 'On Process' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">${i.Status || 'Pending'}</span>
+                    <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest 
+                    ${i.Status === 'Selesai' ? 'bg-green-100 text-green-700' : i.Status === 'On Process' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">
+                        ${i.Status || 'Pending'}
+                    </span>
                 </td>
                 <td class="px-6 py-5 text-center">
                     ${isAdmin ? `
-                        <button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status || 'Pending'}')" class="p-2.5 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-indigo-600 transition-all shadow-sm">
+                        <button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status || 'Pending'}')" 
+                        class="p-2.5 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-indigo-600 transition-all shadow-sm">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
                     ` : `<span class="text-[10px] text-slate-300 italic uppercase">User Only</span>`}
                 </td>
                 <td class="px-6 py-5 text-center">
-                    <span class="px-3 py-1.5 rounded-lg text-[10px] font-black ${isClose ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-700'}">${isClose ? 'CLOSE' : 'OPEN'}</span>
+                    <span class="px-3 py-1.5 rounded-lg text-[10px] font-black ${isClose ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-700'}">
+                        ${isClose ? 'CLOSE' : 'OPEN'}
+                    </span>
                 </td>
             </tr>
         `;
     }).join('');
 }
 
-// WINDOW FUNCTIONS
+// EVENT LISTENERS & WINDOW FUNCTIONS
 window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; };
-
-window.exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(localData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Orders");
-    XLSX.writeFile(wb, "Report_Sparepart.xlsx");
-};
-
+window.closeModal = () => document.getElementById('modal-admin').classList.add('hidden');
 window.openModal = (id, pr, po, status) => {
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-pr').value = pr;
@@ -102,8 +100,6 @@ window.openModal = (id, pr, po, status) => {
     document.getElementById('edit-status').value = status;
     document.getElementById('modal-admin').classList.remove('hidden');
 };
-
-window.closeModal = () => document.getElementById('modal-admin').classList.add('hidden');
 
 window.saveAdminUpdate = async () => {
     const id = document.getElementById('edit-id').value;
@@ -116,10 +112,16 @@ window.saveAdminUpdate = async () => {
     fetchOrders();
 };
 
-// LISTENERS
+window.exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(localData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Orders");
+    XLSX.writeFile(wb, "Report_Sparepart.xlsx");
+};
+
+// SEARCH & SORT EVENT
 document.getElementById('sort-select').addEventListener('change', (e) => {
-    const filtered = localData.filter(i => i['Nama Barang']?.toLowerCase().includes(document.getElementById('search-input').value.toLowerCase()));
-    renderTable(sortData(filtered, e.target.value));
+    renderTable(sortData(localData, e.target.value));
 });
 
 document.getElementById('search-input').addEventListener('input', (e) => {
@@ -131,32 +133,7 @@ document.getElementById('search-input').addEventListener('input', (e) => {
     renderTable(sortData(filtered, document.getElementById('sort-select').value));
 });
 
-document.getElementById('import-excel').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        if(confirm(`Import ${jsonData.length} data?`)) {
-            const formatted = jsonData.map(row => ({
-                'Nama Barang': row['Part Name'] || row['Nama Barang'] || '',
-                'Spesifikasi': row['Spec'] || row['Spesifikasi'] || '',
-                'Quantity Order': Math.floor(parseFloat(row['Qty'] || row['Quantity Order'] || 0)),
-                'Nama Mesin': row['Machine Name'] || row['Nama Mesin'] || '',
-                'Nama Line': row['Line Name'] || row['Nama Line'] || '',
-                'PIC Order': row['PIC'] || row['PIC Order'] || '',
-                'Status': 'Pending'
-            }));
-            const { error } = await supabase.from('Order-sparepart').insert(formatted);
-            if(!error) { alert("Sukses!"); fetchOrders(); }
-            else alert("Gagal: " + error.message);
-        }
-        document.getElementById('import-excel').value = "";
-    };
-    reader.readAsArrayBuffer(file);
-});
-
+// FORM SUBMIT
 document.getElementById('order-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
@@ -173,4 +150,5 @@ document.getElementById('order-form').addEventListener('submit', async (e) => {
     fetchOrders();
 });
 
+// RUN
 checkSession();
