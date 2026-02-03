@@ -9,18 +9,30 @@ let currentEmail = "";
 let localData = [];
 
 async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { window.location.href = 'login.html'; return; }
-    
-    currentEmail = session.user.email;
-    document.getElementById('user-display').innerText = `User: ${currentEmail}`;
-    
-    const isAdmin = currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-    if (isAdmin) {
-        document.getElementById('admin-tools')?.classList.remove('hidden');
-        document.getElementById('form-container')?.classList.add('hidden');
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+        } else {
+            currentEmail = session.user.email;
+            const userDisplay = document.getElementById('user-display');
+            if (userDisplay) userDisplay.innerText = `User: ${currentEmail}`;
+            
+            const formContainer = document.getElementById('form-container');
+            const adminTools = document.getElementById('admin-tools');
+
+            if (currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                adminTools?.classList.remove('hidden');
+                formContainer?.classList.add('hidden');
+            } else {
+                adminTools?.classList.add('hidden');
+                formContainer?.classList.remove('hidden');
+            }
+            fetchOrders();
+        }
+    } catch (err) {
+        console.error("Session error:", err);
     }
-    fetchOrders();
 }
 
 async function fetchOrders() {
@@ -61,7 +73,6 @@ function renderTable(data) {
         const isDone = i.Status === 'Selesai';
         const isProcess = i.Status === 'On Process';
         
-        // Memastikan 8 cell (<td>) sama dengan header
         return `
             <tr class="hover:bg-slate-50 transition-all border-b border-slate-50">
                 <td class="px-6 py-5 text-[10px] text-slate-400 font-mono text-center">${new Date(i.created_at).toLocaleDateString('id-ID')}</td>
@@ -83,7 +94,15 @@ function renderTable(data) {
                     </span>
                 </td>
                 <td class="px-6 py-5 text-center">
-                    ${isAdmin ? `<button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status}')" class="text-indigo-600 hover:scale-110 transition-transform font-black text-[10px] uppercase">Edit</button>` : '<span class="text-[8px] text-slate-300">No Access</span>'}
+                    ${isAdmin ? `
+                        <button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status}')" 
+                        class="p-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                <path d="M5.433 13.917l1.758-4.293a1 1 0 01.593-.593l4.293-1.758a1 1 0 011.09.217l3.654 3.654a1 1 0 01.217 1.09l-1.758 4.293a1 1 0 01-.593.593l-4.293 1.758a1 1 0 01-1.09-.217l-3.654-3.654a1 1 0 01-.217-1.09zM12 15a1 1 0 00.33-.06l1.246-.509a1 1 0 00.706-.893c.092-.596-.341-1.09-.94-1.09-.588 0-1.077.494-1.157 1.09-.08.596.353 1.09.94 1.09z" />
+                                <path fill-rule="evenodd" d="M12.293 2.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-8.586 8.586-4.293 1.758 1.758-4.293 8.586-8.586zM6.917 13.433a2.001 2.001 0 00-2.434 2.434l-.509 1.246a.5.5 0 00.627.627l1.246-.509a2.001 2.001 0 002.434-2.434l-3.654-3.654z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    ` : '<span class="text-[8px] text-slate-300 font-bold">VIEW ONLY</span>'}
                 </td>
             </tr>
         `;
@@ -106,7 +125,7 @@ window.saveAdminUpdate = async () => {
         'PO': document.getElementById('edit-po').value,
         'Status': document.getElementById('edit-status').value
     }).eq('id', id);
-    if (!error) { window.closeModal(); fetchOrders(); }
+    if (!error) { window.closeModal(); fetchOrders(); } else { alert("Gagal update data!"); }
 };
 window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; };
 window.exportToExcel = () => {
