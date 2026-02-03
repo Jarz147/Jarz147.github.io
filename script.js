@@ -50,18 +50,16 @@ if (orderForm) {
         e.preventDefault();
         const btn = document.getElementById('btn-submit');
         
-        // Ambil elemen dengan ID huruf kecil (standar HTML)
         const elNama = document.getElementById('nama_barang');
         const elSpec = document.getElementById('spesifikasi');
         const elQty = document.getElementById('qty');
-        const elSatuan = document.getElementById('satuan'); // Pastikan di HTML id="satuan"
+        const elSatuan = document.getElementById('satuan');
         const elMesin = document.getElementById('nama_mesin');
         const elLine = document.getElementById('nama_line');
         const elPic = document.getElementById('pic_order');
 
-        // Validasi Null: Mencegah error "properties of null (reading value)"
         if (!elNama || !elQty || !elSatuan) {
-            alert("Error: Elemen form tidak ditemukan. Periksa ID 'nama_barang', 'qty', dan 'satuan' di HTML Anda.");
+            alert("Terjadi kesalahan pada elemen form!");
             return;
         }
 
@@ -72,7 +70,7 @@ if (orderForm) {
             'Nama Barang': elNama.value,
             'Spesifikasi': elSpec ? elSpec.value : '',
             'Quantity Order': parseInt(elQty.value),
-            'Satuan': elSatuan.value, // Mengirim ke kolom "Satuan" di Supabase
+            'Satuan': elSatuan.value, // Kolom 'Satuan' (S besar) di Supabase
             'Nama Mesin': elMesin ? elMesin.value : '',
             'Nama Line': elLine ? elLine.value : '',
             'PIC Order': elPic ? elPic.value : '',
@@ -82,11 +80,11 @@ if (orderForm) {
         const { error } = await supabase.from('Order-sparepart').insert([payload]);
         
         if (error) {
-            alert("Error: " + error.message);
+            alert("Gagal: " + error.message);
         } else {
             orderForm.reset();
             fetchOrders();
-            alert("Berhasil mengirim permintaan!");
+            alert("Permintaan berhasil dikirim!");
         }
         
         btn.innerText = "KIRIM PERMINTAAN";
@@ -142,18 +140,12 @@ function renderTable(data) {
     }).join('');
 }
 
-// --- UTILITIES (Global Scope) ---
+// --- GLOBAL UTILITIES ---
 window.openModal = (id, pr, po, status) => {
-    const elId = document.getElementById('edit-id');
-    const elPr = document.getElementById('edit-pr');
-    const elPo = document.getElementById('edit-po');
-    const elStatus = document.getElementById('edit-status');
-    
-    if(elId) elId.value = id;
-    if(elPr) elPr.value = pr;
-    if(elPo) elPo.value = po;
-    if(elStatus) elStatus.value = status;
-    
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-pr').value = pr;
+    document.getElementById('edit-po').value = po;
+    document.getElementById('edit-status').value = status;
     document.getElementById('modal-admin')?.classList.remove('hidden');
 };
 
@@ -191,12 +183,21 @@ window.exportToExcel = () => {
 document.getElementById('search-input')?.addEventListener('input', (e) => {
     const val = e.target.value.toLowerCase();
     const filtered = localData.filter(i => 
-        (i['Nama Barang'] && i['Nama Barang'].toLowerCase().includes(val)) || 
-        (i['Nama Mesin'] && i['Nama Mesin'].toLowerCase().includes(val)) ||
-        (i.Status && i.Status.toLowerCase().includes(val))
+        (i['Nama Barang']?.toLowerCase().includes(val)) || 
+        (i['Nama Mesin']?.toLowerCase().includes(val)) ||
+        (i.Status?.toLowerCase().includes(val))
     );
     renderTable(filtered);
 });
 
-// Mulai Aplikasi
+// --- SORTING ---
+document.getElementById('sort-select')?.addEventListener('change', (e) => {
+    const mode = e.target.value;
+    let sortedData = [...localData];
+    if (mode === 'newest') sortedData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    else if (mode === 'oldest') sortedData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    else if (mode === 'name-asc') sortedData.sort((a, b) => a['Nama Barang'].localeCompare(b['Nama Barang']));
+    renderTable(sortedData);
+});
+
 checkSession();
