@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="icon" type="image/png" href="MTC.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sparepart Control</title>
+    <link rel="icon" type="image/png" href="MTC.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -13,18 +13,14 @@
 
     <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center border-b pb-6 gap-4">
-            <div>
-                <div class="flex items-center gap-3">
-    <img src="TEST 1 C.png" alt="Logo" class="h-12 w-auto object-contain"> 
-    
-    <div>
-        <h1 class="text-2xl font-black text-slate-800 tracking-tight">
-            Sparepart <span class="text-indigo-600">Pro</span>
-        </h1>
-        <p id="user-display" class="text-slate-500 text-[10px] font-bold uppercase tracking-widest"></p>
-    </div>
-</div>
-                <p id="user-display" class="text-slate-500 text-[10px] mt-1 font-bold uppercase tracking-widest"></p>
+            <div class="flex items-center gap-4">
+                <img src="TEST 1 C.png" alt="Logo" class="h-14 w-auto object-contain hover:scale-105 transition-transform cursor-pointer" onclick="location.reload()"> 
+                <div>
+                    <h1 class="text-3xl font-black text-slate-800 tracking-tight">
+                        Sparepart <span class="text-indigo-600">Pro</span>
+                    </h1>
+                    <p id="user-display" class="text-slate-500 text-[10px] mt-1 font-bold uppercase tracking-widest"></p>
+                </div>
             </div>
             <div class="flex gap-3 items-center">
                 <div id="admin-tools" class="hidden flex gap-3">
@@ -33,7 +29,6 @@
                         IMPORT EXCEL
                     </button>
                 </div>
-                
                 <button onclick="window.exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-50">EXPORT EXCEL</button>
                 <button onclick="window.logout()" class="bg-white border border-rose-200 text-rose-500 text-[10px] font-black px-5 py-2.5 rounded-xl hover:bg-rose-50 transition-all">LOGOUT</button>
             </div>
@@ -57,34 +52,33 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-4 mb-6">
-    <div class="relative max-w-sm flex-1">
-        <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor font-black"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-    </div>
-    
-    <select id="sort-select" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-600">
-        <option value="newest">Terbaru</option>
-        <option value="oldest">Terlama</option>
-        <option value="name-asc">Nama (A-Z)</option>
-        <option value="qty-desc">Qty Terbanyak</option>
-    </select>
-</div>
+            <div class="relative max-w-sm flex-1">
+                <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor font-black"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <select id="sort-select" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-bold text-slate-600">
+                <option value="newest">Terbaru</option>
+                <option value="oldest">Terlama</option>
+                <option value="name-asc">Nama (A-Z)</option>
+                <option value="qty-desc">Qty Terbanyak</option>
+            </select>
+        </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                            <th class="px-6 py-5">Check</th>
                             <th class="px-6 py-5">Date</th>
                             <th class="px-6 py-5">Item Details</th>
                             <th class="px-6 py-5">Location/Qty</th>
                             <th class="px-6 py-5">Docs</th>
                             <th class="px-6 py-5 text-center">Status</th>
                             <th class="px-6 py-5 text-center">Action</th>
+                            <th class="px-6 py-5 text-center">Progress</th>
                         </tr>
                     </thead>
-                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm"></tbody>
+                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm font-semibold text-slate-700"></tbody>
                 </table>
             </div>
         </div>
