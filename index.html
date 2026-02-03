@@ -7,11 +7,45 @@
     <link rel="icon" type="image/png" href="MTC.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS Tambahan untuk Freeze Header & Scrollbar */
+        .table-container {
+            max-height: 65vh;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        /* Menjaga header tetap di atas saat scroll */
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background-color: #f8fafc; /* bg-slate-50 */
+            box-shadow: inset 0 -1px 0 #e2e8f0; /* Garis bawah tipis */
+        }
+
+        /* Custom Scrollbar Modern */
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20 font-sans">
 
     <div class="max-w-7xl mx-auto px-4 py-8">
+        
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center border-b pb-6 gap-4">
             <div class="flex items-center gap-4">
                 <img src="TEST 1 C.png" alt="Logo" class="h-14 w-auto object-contain hover:scale-105 transition-transform cursor-pointer" onclick="location.reload()"> 
@@ -22,6 +56,7 @@
                     <p id="user-display" class="text-slate-500 text-[10px] mt-1 font-bold uppercase tracking-widest"></p>
                 </div>
             </div>
+
             <div class="flex gap-3 items-center">
                 <div id="admin-tools" class="hidden flex gap-3">
                     <input type="file" id="import-excel" class="hidden" accept=".xlsx, .xls">
@@ -56,6 +91,7 @@
                 <input type="text" id="search-input" placeholder="Cari barang, mesin, atau status..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor font-black"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
+            
             <select id="sort-select" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-bold text-slate-600">
                 <option value="newest">Terbaru</option>
                 <option value="oldest">Terlama</option>
@@ -65,20 +101,21 @@
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
+            <div class="table-container">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50 border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                        <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
                             <th class="px-6 py-5">Date</th>
                             <th class="px-6 py-5">Item Details</th>
-                            <th class="px-6 py-5">Location/Qty</th>
+                            <th class="px-6 py-5">Location / Qty</th>
                             <th class="px-6 py-5">Docs</th>
                             <th class="px-6 py-5 text-center">Status</th>
                             <th class="px-6 py-5 text-center">Action</th>
                             <th class="px-6 py-5 text-center">Progress</th>
                         </tr>
                     </thead>
-                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm font-semibold text-slate-700"></tbody>
+                    <tbody id="data-body" class="divide-y divide-slate-50 text-sm font-semibold text-slate-700">
+                        </tbody>
                 </table>
             </div>
         </div>
