@@ -23,13 +23,13 @@ async function checkSession() {
             const formContainer = document.getElementById('form-container');
             const adminTools = document.getElementById('admin-tools');
 
-            // Jika ADMIN login
+            // Logika Sembunyikan Form untuk Admin
             if (currentEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                adminTools?.classList.remove('hidden'); // Munculkan tombol Admin
-                formContainer?.classList.add('hidden'); // SEMBUNYIKAN FORM
+                adminTools?.classList.remove('hidden');
+                formContainer?.classList.add('hidden');
             } else {
                 adminTools?.classList.add('hidden');
-                formContainer?.classList.remove('hidden'); // Munculkan Form untuk user biasa
+                formContainer?.classList.remove('hidden');
             }
             
             fetchOrders();
@@ -52,14 +52,13 @@ async function fetchOrders() {
     }
 }
 
-// --- EVENT SUBMIT FORM ---
+// --- SUBMIT FORM ---
 const orderForm = document.getElementById('order-form');
 if (orderForm) {
     orderForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btn-submit');
         
-        // Ambil elemen
         const elNama = document.getElementById('nama_barang');
         const elSatuan = document.getElementById('satuan');
         const elQty = document.getElementById('qty');
@@ -83,7 +82,7 @@ if (orderForm) {
         const { error } = await supabase.from('Order-sparepart').insert([payload]);
         
         if (error) {
-            alert("Gagal: " + error.message);
+            alert("Error: " + error.message);
         } else {
             orderForm.reset();
             fetchOrders();
@@ -107,22 +106,24 @@ function renderTable(data) {
         
         return `
             <tr class="hover:bg-slate-50 transition-all border-b border-slate-50">
-                <td class="px-6 py-5 text-[10px] text-slate-400 font-mono text-center">
+                <td class="px-6 py-5 text-[10px] text-slate-400 font-mono text-center leading-tight">
                     ${new Date(i.created_at).toLocaleDateString('id-ID')}
                 </td>
                 <td class="px-6 py-5">
                     <div class="text-slate-800 font-bold text-sm uppercase">${i['Nama Barang']}</div>
-                    <div class="text-[10px] text-slate-400 italic">${i.Spesifikasi || '-'}</div>
+                    <div class="text-[10px] text-slate-400 italic font-medium">${i.Spesifikasi || '-'}</div>
                 </td>
-                <td class="px-6 py-5 text-center">
-                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
-                        ${i['Nama Line']} | ${i['Nama Mesin']}
-                    </div>
-                    <div class="text-indigo-600 font-black text-xs uppercase">
-                        ${i['Quantity Order']} ${i.Satuan || 'PCS'}
-                    </div>
+                <td class="px-6 py-5 text-center font-black text-indigo-600 text-sm">
+                    ${i['Quantity Order']}
                 </td>
-                <td class="px-6 py-5 text-[10px] text-slate-500 font-mono">
+                <td class="px-6 py-5 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    ${i.Satuan || '-'}
+                </td>
+                <td class="px-6 py-5">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight">${i['Nama Line']}</div>
+                    <div class="text-[9px] text-slate-400 font-medium italic uppercase">${i['Nama Mesin']}</div>
+                </td>
+                <td class="px-6 py-5 text-[10px] text-slate-500 font-mono leading-relaxed">
                     PR: ${i.PR || '-'}<br>PO: ${i.PO || '-'}
                 </td>
                 <td class="px-6 py-5 text-center">
@@ -134,8 +135,8 @@ function renderTable(data) {
                 <td class="px-6 py-5 text-center">
                     ${isAdmin ? `
                         <button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status}')" 
-                        class="text-indigo-600 hover:scale-110 transition-transform font-bold text-xs uppercase">Edit</button>
-                    ` : '<span class="text-[8px] text-slate-300">No Access</span>'}
+                        class="text-indigo-600 hover:scale-110 transition-transform font-black text-[10px] uppercase">Edit</button>
+                    ` : '<span class="text-[8px] text-slate-300 font-bold">VIEW ONLY</span>'}
                 </td>
             </tr>
         `;
@@ -165,7 +166,7 @@ window.saveAdminUpdate = async () => {
         window.closeModal();
         fetchOrders();
     } else {
-        alert("Gagal update: " + error.message);
+        alert("Gagal update data!");
     }
 };
 
