@@ -19,6 +19,21 @@ tr {
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Membuat header tabel tetap di atas (Freeze) */
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8fafc; /* Warna bg-slate-50 agar menyatu */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Garis halus di bawah header saat scroll */
+}
+
+/* Pastikan container tabel memiliki batas tinggi jika ingin freeze di dalam box */
+.overflow-x-auto {
+    max-height: 70vh; /* Sesuaikan tinggi tabel, misal 70% tinggi layar */
+    overflow-y: auto;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
