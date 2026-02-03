@@ -39,11 +39,12 @@ document.getElementById('order-form').addEventListener('submit', async (e) => {
     btn.innerText = "MENGIRIM...";
     btn.disabled = true;
 
+    // Pastikan ID 'satuan' di getElementById sama dengan yang ada di HTML (<select id="satuan">)
     const payload = {
         'Nama Barang': document.getElementById('nama_barang').value,
         'Spesifikasi': document.getElementById('spesifikasi').value,
         'Quantity Order': parseInt(document.getElementById('qty').value),
-        'Satuan': document.getElementById('Satuan').value,
+        'Satuan': document.getElementById('satuan').value, // Mengambil dari ID 'satuan', dikirim ke kolom 'Satuan'
         'Nama Mesin': document.getElementById('nama_mesin').value,
         'Nama Line': document.getElementById('nama_line').value,
         'PIC Order': document.getElementById('pic_order').value,
@@ -51,8 +52,9 @@ document.getElementById('order-form').addEventListener('submit', async (e) => {
     };
 
     const { error } = await supabase.from('Order-sparepart').insert([payload]);
-    if (error) alert(error.message);
-    else {
+    if (error) {
+        alert("Error: " + error.message);
+    } else {
         document.getElementById('order-form').reset();
         fetchOrders();
     }
