@@ -34,39 +34,50 @@ async function fetchOrders() {
     }
 }
 
-// RENDERING
+// script.js (Bagian renderTable)
 function renderTable(data) {
     const body = document.getElementById('data-body');
     const isAdmin = currentEmail === ADMIN_EMAIL;
 
-    body.innerHTML = data.map(i => `
-        <tr class="${i.Status === 'Pending' ? 'bg-rose-50/30' : ''} hover:bg-slate-50 transition-all font-semibold border-b border-slate-50">
-            <td class="px-6 py-5 text-[10px] text-slate-400 uppercase">${new Date(i.created_at).toLocaleDateString()}</td>
-            <td class="px-6 py-5">
-                <div class="text-slate-800">${i['Nama Barang']}</div>
-                <div class="text-[10px] text-slate-400 italic">${i.Spesifikasi || ''}</div>
-            </td>
-            <td class="px-6 py-5">
-                <div class="text-[10px] text-slate-600">${i['Nama Line']} / ${i['Nama Mesin']}</div>
-                <div class="text-indigo-600 font-black uppercase">QTY: ${i['Quantity Order']}</div>
-            </td>
-            <td class="px-6 py-5 text-[10px] text-slate-500 font-mono">
-                PR: ${i.PR || '-'}<br>PO: ${i.PO || '-'}
-            </td>
-            <td class="px-6 py-5 text-center">
-                <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${i.Status === 'Selesai' ? 'bg-green-100 text-green-700' : i.Status === 'On Process' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">${i.Status || 'Pending'}</span>
-            </td>
-            <td class="px-6 py-5 text-center">
-                ${isAdmin ? `
-                    <button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status || 'Pending'}')" class="p-2.5 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-indigo-600 transition-all shadow-sm">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                    </button>
-                ` : `<span class="text-[10px] text-slate-300 italic uppercase">User Only</span>`}
-            </td>
-        </tr>
-    `).join('');
-}
+    body.innerHTML = data.map(i => {
+        // Logika penentuan OPEN/CLOSE
+        const isClose = i.Status === 'Selesai';
+        const progressText = isClose ? 'CLOSE' : 'OPEN';
+        const progressColor = isClose ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-700';
 
+        return `
+            <tr class="${i.Status === 'Pending' ? 'bg-rose-50/30' : ''} hover:bg-slate-50 transition-all font-semibold border-b border-slate-50">
+                <td class="px-6 py-5 text-[10px] text-slate-400 uppercase">${new Date(i.created_at).toLocaleDateString()}</td>
+                <td class="px-6 py-5">
+                    <div class="text-slate-800">${i['Nama Barang']}</div>
+                    <div class="text-[10px] text-slate-400 italic">${i.Spesifikasi || ''}</div>
+                </td>
+                <td class="px-6 py-5">
+                    <div class="text-[10px] text-slate-600">${i['Nama Line']} / ${i['Nama Mesin']}</div>
+                    <div class="text-indigo-600 font-black uppercase">QTY: ${i['Quantity Order']}</div>
+                </td>
+                <td class="px-6 py-5 text-[10px] text-slate-500 font-mono">
+                    PR: ${i.PR || '-'}<br>PO: ${i.PO || '-'}
+                </td>
+                <td class="px-6 py-5 text-center">
+                    <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${i.Status === 'Selesai' ? 'bg-green-100 text-green-700' : i.Status === 'On Process' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">${i.Status || 'Pending'}</span>
+                </td>
+                <td class="px-6 py-5 text-center">
+                    ${isAdmin ? `
+                        <button onclick="window.openModal('${i.id}','${i.PR || ''}','${i.PO || ''}','${i.Status || 'Pending'}')" class="p-2.5 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-indigo-600 transition-all shadow-sm">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        </button>
+                    ` : `<span class="text-[10px] text-slate-300 italic uppercase">User Only</span>`}
+                </td>
+                <td class="px-6 py-5 text-center">
+                    <span class="px-3 py-1.5 rounded-lg text-[10px] font-black ${progressColor}">
+                        ${progressText}
+                    </span>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
 // GLOBAL WINDOW FUNCTIONS
 window.logout = async () => { 
     await supabase.auth.signOut(); 
