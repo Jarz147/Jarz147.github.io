@@ -54,7 +54,7 @@ if (orderForm) {
             'Satuan': document.getElementById('satuan').value,
             'Nama Mesin': document.getElementById('nama_mesin').value,
             'Nama Line': document.getElementById('nama_line').value,
-            'PIC Order': document.getElementById('pic_order').value,
+            'PIC Order': document.getElementById('pic_order').value, // Mengambil dari dropdown
             'Status': 'Pending'
         };
 
@@ -137,7 +137,12 @@ window.exportToExcel = () => {
 };
 document.getElementById('search-input')?.addEventListener('input', (e) => {
     const val = e.target.value.toLowerCase();
-    const filtered = localData.filter(i => (i['Nama Barang']?.toLowerCase().includes(val)) || (i['Nama Mesin']?.toLowerCase().includes(val)) || (i.Status?.toLowerCase().includes(val)));
+    const filtered = localData.filter(i => 
+        (i['Nama Barang']?.toLowerCase().includes(val)) || 
+        (i['Nama Mesin']?.toLowerCase().includes(val)) || 
+        (i['PIC Order']?.toLowerCase().includes(val)) ||
+        (i.Status?.toLowerCase().includes(val))
+    );
     renderTable(filtered);
 });
 
