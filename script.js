@@ -79,7 +79,7 @@ function renderTable(data) {
                 <td class="px-6 py-5">
                     <div class="text-slate-800 font-bold text-sm uppercase">${i['Nama Barang']}</div>
                     <div class="text-[10px] text-slate-400 italic">${i.Spesifikasi || '-'}</div>
-                    <div class="text-[9px] text-indigo-500 font-bold mt-1 uppercase italic">Req: ${i['PIC Order'] || '-'}</div>
+                    <div class="text-[9px] text-indigo-500 font-bold mt-1 uppercase italic">PIC: ${i['PIC Order'] || '-'}</div>
                 </td>
                 <td class="px-6 py-5 text-center font-black text-indigo-600 text-sm">${i['Quantity Order']}</td>
                 <td class="px-6 py-5 text-center text-[10px] font-black text-slate-400 uppercase">${i.Satuan || 'PCS'}</td>
@@ -137,12 +137,7 @@ window.exportToExcel = () => {
 };
 document.getElementById('search-input')?.addEventListener('input', (e) => {
     const val = e.target.value.toLowerCase();
-    const filtered = localData.filter(i => 
-        (i['Nama Barang']?.toLowerCase().includes(val)) || 
-        (i['Nama Mesin']?.toLowerCase().includes(val)) || 
-        (i['PIC Order']?.toLowerCase().includes(val)) || // Pencarian berdasarkan PIC
-        (i.Status?.toLowerCase().includes(val))
-    );
+    const filtered = localData.filter(i => (i['Nama Barang']?.toLowerCase().includes(val)) || (i['Nama Mesin']?.toLowerCase().includes(val)) || (i.Status?.toLowerCase().includes(val)));
     renderTable(filtered);
 });
 
