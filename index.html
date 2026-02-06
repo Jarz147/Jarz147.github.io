@@ -67,7 +67,14 @@
                 
                 <input type="text" id="nama_mesin" required placeholder="Nama Mesin" class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
                 <input type="text" id="nama_line" required placeholder="Nama Line" class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
-                <input type="text" id="pic_order" required placeholder="PIC Request" class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold border-transparent">
+                
+                <select id="pic_order" required class="px-5 py-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-[10px] font-black uppercase text-slate-500 border-transparent cursor-pointer">
+                    <option value="" disabled selected>PILIH PIC REQUEST</option>
+                    <option value="PIC 1">PIC 1</option>
+                    <option value="PIC 2">PIC 2</option>
+                    <option value="PIC 3">PIC 3</option>
+                    <option value="PIC 4">PIC 4</option>
+                </select>
                 
                 <div class="md:col-span-4 flex justify-end">
                     <button type="submit" id="btn-submit" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-12 rounded-2xl shadow-xl shadow-indigo-100 text-[10px] uppercase tracking-widest">Kirim Permintaan</button>
@@ -96,7 +103,7 @@
                         </tr>
                     </thead>
                     <tbody id="data-body" class="divide-y divide-slate-50 text-sm font-semibold text-slate-700">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
